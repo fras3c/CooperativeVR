@@ -66,6 +66,7 @@
                 
 				vrpBuilder.addJob(Service.Builder.newInstance("3").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("3")).build());
 				vrpBuilder.addJob(Service.Builder.newInstance("4").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("4")).build());
+				vrpBuilder.addJob(Service.Builder.newInstance("5").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("5")).build());
 
 
 
@@ -75,9 +76,12 @@
 
             
 				VehicleRoutingTransportCostsMatrix.Builder costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
-				costMatrixBuilder.addTransportDistance("0", "3", 42.6554);
-				costMatrixBuilder.addTransportDistance("0", "4", 38.349199999999996);
-				costMatrixBuilder.addTransportDistance("3", "4", 13.4349);
+				costMatrixBuilder.addTransportDistance("0", "3", 46.498);
+				costMatrixBuilder.addTransportDistance("0", "4", 45.5911);
+				costMatrixBuilder.addTransportDistance("0", "5", 67.45410000000001);
+				costMatrixBuilder.addTransportDistance("3", "4", 66.5926);
+				costMatrixBuilder.addTransportDistance("3", "5", 23.3988);
+				costMatrixBuilder.addTransportDistance("4", "5", 54.5615);
 
 
 

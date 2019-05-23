@@ -115,14 +115,14 @@ def BuildCode(nrVehicles, capacity, services, costMatrix, filename):
         the_file.write(code)
 
 def compile_java(java_file):
-    subprocess.check_call(['javac', '-cp', '.:/Users/flupia/Documents/workspace/NextShop5_2/lib/*', java_file])
+    subprocess.check_call(['javac', '-cp', '.:./libs/*', java_file])
 
 def execute_java(java_file):
     java_class,ext = os.path.splitext(java_file)
-    cmd = ['java', '-cp', '.:/Users/flupia/Documents/workspace/NextShop5_2/lib/*', java_class]
+    cmd = ['java', '-cp', '.:./libs/*', java_class]
     #proc = subprocess.Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, encoding='utf8')
     try:
-        ans = check_output(['java', '-cp', '.:/Users/flupia/Documents/workspace/NextShop5_2/lib/*', java_class])
+        ans = check_output(['java', '-cp', '.:./libs/*', java_class])
     except subprocess.CalledProcessError as e:
         raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
     #stdout,stderr = proc.communicate(stdin)

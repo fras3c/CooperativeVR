@@ -143,17 +143,17 @@
       <div class='small pad2y keyline-bottom'>
         <div class='fl space-top1_5 pad0 fill-green dark center dot'> <span class='fas fa-truck' /></div>
         <div class='strong space-left4'>Primo spedizioniere</div>
-        <div id='0' class='quiet space-left4'>Costo totale per servire i propri clienti è pari a 0.</div>
+        <div id='0' class='quiet space-left4'>Nessun dato.</div>
       </div>
       <div class='small pad2y keyline-bottom'>
          <div class='fl space-top1_5 pad0 fill-mustard dark center dot'> <span class='fas fa-truck' /></div>
          <div class='strong space-left4'>Secondo spedizioniere</div>
-         <div id='1' class='quiet space-left4'>Costo totale per servire i propri clienti è pari a 0.</div>
+         <div id='1' class='quiet space-left4'>Nessun dato.</div>
       </div>
       <div class='small pad2y'>
          <div class='fl space-top1_5 pad0 fill-blue dark center dot'> <span class='fas fa-user-friends' /></div>
          <div class='strong space-left4'>Cooperazione</div>
-        <div id='2' class='quiet space-left4'></div>
+        <div id='2' class='quiet space-left4'>Nessun dato.</div>
       </div>
     </div>
     </div>
@@ -335,7 +335,7 @@ function cooperate() {
                   else {
                         run3(clienti1,rotta1, costo1, '0', true);
                         run3(clienti2, rotta2, costo2, '1', false);
-                        var testo = "Buone notizie! I costi sono stati migliorati con la cooperazione! I costi dei due spedizionieri prima della cooperazione erano rispettivamente pari a " + costoIniziale1 + " e " + costoIniziale2 + ". ";
+                        var testo = "Buone notizie! I costi sono stati migliorati con la cooperazione! I costi dei due spedizionieri prima della cooperazione erano rispettivamente pari a " + costoIniziale1 + " km e " + costoIniziale2 + " km. ";
                             testo += "Il numero di clienti scambiato è pari a " + risultato[3] + " con un risparmio di " + parseFloat(Math.round(risultato[2]* 100) / 100).toFixed(2) + " km.";
                        document.getElementById(2).innerHTML = testo;
                     }
@@ -375,7 +375,7 @@ function run3(clienti, rotta, costo, IDrotta, flag) {
         colore = colors[c];
         c++;
 
-        document.getElementById(IDrotta.toString()).innerHTML = "Il costo totale per servire i propri clienti è pari a " + costo + ".";
+  document.getElementById(IDrotta.toString()).innerHTML = "Il costo totale per servire i propri clienti è pari a " + costo + " km.";
         var api = 'https://api.mapbox.com/directions/v5/';
 
 

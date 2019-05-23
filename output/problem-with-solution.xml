@@ -85,10 +85,25 @@
                     </timeWindow>
                </timeWindows>
           </service>
+          <service id="5" type="service">
+               <location>
+                    <id>5</id>
+               </location>
+               <capacity-dimensions>
+                    <dimension index="0">1</dimension>
+               </capacity-dimensions>
+               <duration>0.0</duration>
+               <timeWindows>
+                    <timeWindow>
+                         <start>0.0</start>
+                         <end>1.7976931348623157E308</end>
+                    </timeWindow>
+               </timeWindows>
+          </service>
      </services>
      <solutions>
           <solution>
-               <cost>94.4395</cost>
+               <cost>170.0494</cost>
                <routes>
                     <route>
                          <driverId>noDriver</driverId>
@@ -96,6 +111,11 @@
                          <start>0.0</start>
                          <act type="service">
                               <serviceId>3</serviceId>
+                              <arrTime>0.0</arrTime>
+                              <endTime>0.0</endTime>
+                         </act>
+                         <act type="service">
+                              <serviceId>5</serviceId>
                               <arrTime>0.0</arrTime>
                               <endTime>0.0</endTime>
                          </act>
@@ -109,7 +129,7 @@
                </routes>
           </solution>
           <solution>
-               <cost>94.4395</cost>
+               <cost>170.0494</cost>
                <routes>
                     <route>
                          <driverId>noDriver</driverId>
@@ -117,6 +137,11 @@
                          <start>0.0</start>
                          <act type="service">
                               <serviceId>3</serviceId>
+                              <arrTime>0.0</arrTime>
+                              <endTime>0.0</endTime>
+                         </act>
+                         <act type="service">
+                              <serviceId>5</serviceId>
                               <arrTime>0.0</arrTime>
                               <endTime>0.0</endTime>
                          </act>
