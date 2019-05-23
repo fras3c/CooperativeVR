@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.css' rel='stylesheet' />
+    <link href='https://www.mapbox.com/base/latest/base.css' rel='stylesheet' />
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:300px; bottom:0; width:100%; }
+        #reset {
+            position: absolute;
+            bottom: 25px;
+            left: 20px;
+            z-index: 999;
+        }
+    </style>
+    <!-- <link rel="canonical" href="https://labs.mapbox.com/bites/00321/" > -->
+</head>
+<body>
+<a href='#' id='reset' class='button fill-darken1'>reset</a>
+
+<div class="container">
+      <div class="jumbotron mt-3">
+        <h1>Progetto NextSHOP</h1>
+        <p class="lead">Prototipo LastMile.</p>
+        <!-- <a class="btn btn-lg btn-primary" href="/demo/" role="button">Demo &raquo;</a> -->
+        <button onclick="demo()" class="btn btn-primary" type="button">Demo &raquo;</button>
+      </div>
+    </div>
+    <!--
+    <nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Bottom navbar</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">Disabled</a>
+          </li>
+          <li class="nav-item dropup">
+            <a class="nav-link dropdown-toggle" href="https://getbootstrap.com/" id="dropdown10" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropup</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown10">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav> -->
+
+ <div id='map'></div>
+<div class='clearfix contain'>
+    <div class='pin-topright space-right2 space-top2 width28 pad2x pad1y round fill-white'>
+      <div class='small pad2y keyline-bottom'>
+        <div class='fill-cyan dark space-top1_5 fl pad0 center dot'> <span class='icon car' /></div>
+        <div class='strong space-left4'>Driving directions</div>
+        <div class='quiet space-left4'>Routes on the fastest roads and around traffic.</div>
+      </div>
+      <div class='small pad2y keyline-bottom'>
+         <div class='fl space-top1_5 pad0 fill-mustard dark center dot'> <span class='icon walk' /></div>
+        <div class='strong space-left4'>Walking directions</div>
+        <div class='quiet space-left4'>Finds the shortest path using sidewalks and trails.</div>
+      </div>
+      <div class='small pad2y'>
+         <div  class='fl space-top1_5 pad0 fill-green dark center dot'> <span class='icon bike' /></div>
+        <div class='strong space-left4'>Cycling directions</div>
+        <div class='quiet space-left4'>Chooses the safest routes by favoring streets with bike lanes.</div>
+      </div>
+    </div>
+<div>
+
+{{ value|json_script:"hello-data" }}
+
+<script>
+
+var value = JSON.parse(document.getElementById('hello-data').textContent);
+
+function demo() {
+            var name = "frasec"
+            var obj = {'FileName':name};
+            var myJSON = JSON.stringify(obj);
+            $.ajax({
+                type: 'POST',
+                url: '/demo/',
+
+{#                data: name#}
+                data:myJSON,
+                contentType: 'application/json;charset=UTF-8',
+                async: false,
+                dataType: 'json',
+                success: function (response) {
+                  console.log(JSON.stringify(response));
+                  value = JSON.parse(JSON.stringify(response));
+                  run();
+                  //document.location.reload(true);
+                    //alert("The text has been changed." + name);
+                },
+                error: function (err) {
+                      console.log(err);
+                }
+            });
+}
+
+function run() {
+
+document.getElementById('reset').onclick = clearMap;
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiYWFyb25saWRtYW4iLCJhIjoiNTVucTd0TSJ9.wVh5WkYXWJSBgwnScLupiQ';
+
+//var value = JSON.parse(document.getElementById('hello-data').textContent);
+//console.log(value)
+//var deposito = value["deposito"]
+
+//var end = value["c2"]
+//var middle = value["c1"]
+
+var lat = value['lat']
+var lon = value['lon']
+var rotta = value['rotta']
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v9',
+    center: [lon[0], lat[0]], //deposito,//[16.48757,38.92574],
+    zoom: 13,
+    hash: true
+});
+
+map.scrollZoom.disable();
+var nav = new mapboxgl.NavigationControl();
+map.addControl(nav, 'top-left');
+
+//var start = [-77.04753807398001, 38.90378612315598];
+
+
+//var start = deposito;
+
+//[16.48757,38.92574];
+//var end = [-77.02701979834258, 38.91768142447788];
+//var end = [16.692104177184746, 39.18847606525372];
+
+var api = 'https://api.mapbox.com/directions/v5/';
+var profiles = {
+    driving: {
+        color: '#56b881'//'#3bb2d0'
+    }
+  /*,
+    cycling: {
+        color: '#56b881'
+    },
+    walking: {
+        color: '#fbb03b'
+    }*/
+};
+
+map.on('load', go);
+//map.on('click', go);
+
+
+function go(e) {
+/*
+  if (e.type === 'click' && !start)
+      start = [e.lngLat.lng, e.lngLat.lat];
+*/
+
+for (i = 0; i < lat.length; i++) {
+      var color = "#FF0000"
+      if(i==0)
+         color = "#008000"
+
+       map.addSource(i.toString(), {
+            type: 'geojson',
+            data: {
+                type: 'Point',
+                coordinates: [lon[i], lat[i]]
+            }
+        });
+        map.addLayer({
+            'id': i.toString(),
+            'type': 'circle',
+          'source': i.toString(),
+          'layout': {},
+            'paint': {
+                'circle-radius': 8,
+                'circle-color': color//'#FF0000'//profiles.driving.color
+            }
+        });
+  }
+  /*
+    if (!map.getSource('start')) {
+        map.addSource('start', {
+            type: 'geojson',
+            data: {
+                type: 'Point',
+                coordinates: [start[0], start[1]]
+            }
+        });
+
+        map.addLayer({
+            'id': 'start',
+            'type': 'circle',
+            'source': 'start',
+            'layout': {},
+            'paint': {
+                'circle-radius': 10,
+                'circle-color': '#FF0000'//profiles.driving.color
+            }
+        });
+    }
+
+    if (e.type === 'click') {
+        end = [e.lngLat.lng, e.lngLat.lat];
+        if (end.toString() === start.toString()) {
+            end = null;
+            return
+        }
+    }
+
+    map.addSource('end', {
+        type: 'geojson',
+        data: {
+            type: 'Point',
+            coordinates: [end[0], end[1]]
+        }
+    });
+
+    map.addLayer({
+        'id': 'end',
+        'type': 'circle',
+        'source': 'end',
+        'layout': {},
+        'paint': {
+            'circle-radius': 10,
+            'circle-color': '#FF0000'//profiles.driving.color
+        }
+    });
+
+
+  map.addSource('middle', {
+        type: 'geojson',
+        data: {
+            type: 'Point',
+              coordinates: middle, //[16.380523533774532, 39.181744129419634]
+            //coordinates: [-77.04753807398001, 38.91768142447788]
+        }
+    });
+
+    map.addLayer({
+        'id': 'middle',
+        'type': 'circle',
+      'source': 'middle',
+        'layout': {},
+        'paint': {
+            'circle-radius': 10,
+            'circle-color': '#FF0000'//profiles.driving.color
+        }
+    });
+
+*/
+
+    requestProfiles(Object.keys(profiles));
+   // if (start && end) requestProfiles(start, end, Object.keys(profiles));
+
+} // function go
+
+
+function requestProfiles() {
+    var queue = d3.queue();
+
+    Object.keys(profiles).forEach(function(profile) {
+        queue.defer(route, profile);
+    });
+
+    queue.awaitAll(function(error, results) {
+        results.forEach(function(result) {
+            if (result && result.profile) {
+                profiles[result.profile].route = result.routes[0];
+            }
+        })
+        draw();
+    });
+
+    function route(profile, cb) {
+
+      var percorso = [lon[0], lat[0]];
+      var r = rotta[0][0];
+
+      for(i=0; i < r.length; i++) {
+            percorso += ";" + [lon[parseInt(r[i])], lat[parseInt(r[i])]];
+      }
+      percorso += ";" + [lon[0], lat[0]];
+
+      console.log(percorso);
+
+      //var middle = [-77.04753807398001, 38.91768142447788];
+      //var middle = [16.380523533774532, 39.181744129419634];
+
+      var startEnd = encodeURIComponent(percorso);
+
+
+      //var startEnd = encodeURIComponent(start + ';' + middle +';' +end + ';' + start);
+
+
+      var request = new XMLHttpRequest();
+      var url = api + 'mapbox/' + profile + '/' + startEnd + '.json?access_token=pk.eyJ1IjoiYWFyb25saWRtYW4iLCJhIjoiNTVucTd0TSJ9.wVh5WkYXWJSBgwnScLupiQ&geometries=geojson&overview=full';
+
+      console.log(url)
+
+        request.abort();
+        request.open('GET', url, true);
+        request.send();
+
+        request.onload = function() {
+            if (request.status >= 200 && request.status < 400) {
+                var data = JSON.parse(request.responseText);
+                if (data.error) {
+                    console.log('error');
+                    return clear();
+                }
+                data.profile = profile;
+                return cb(null, data);
+            } else {
+                // never actually error
+                return cb(null, false);
+            }
+        };
+
+        request.onerror = function() {
+          return cb(null, false);
+        };
+
+
+    }
+}
+
+function draw() {
+    // I know
+
+    var bounds = new mapboxgl.LngLatBounds([lon[0], lat[0]], [lon[0], lat[0]]);
+
+    //var bounds = new mapboxgl.LngLatBounds(start, end);
+
+    Object.keys(profiles).forEach(function(profile, idx) {
+        map.addSource(profile + ' route', {
+            type: 'geojson',
+            data: profiles[profile].route.geometry
+        });
+        var route = {
+            'id': profile + ' route',
+            'type': 'line',
+            'source': profile + ' route',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': profiles[profile].color,
+                'line-width': 4,
+                'line-opacity': 1
+            }
+        };
+        if (profile == 'cycling') route.paint['line-dasharray'] = [2.5,2.5];
+        if (profile == 'walking') route.paint['line-dasharray'] = [0,1.5];
+
+       map.addLayer(route, '0');
+
+       // map.addLayer(route, 'start');
+
+        var result = profiles[profile].route.geometry.coordinates.reduce(function(previous, current) {
+            return bounds.extend(current);
+        });
+    });
+
+    map.fitBounds(bounds, {
+        padding: 100
+    });
+}
+
+function clearMap() {
+    Object.keys(profiles).forEach(function(profile) {
+        if (map.getLayer(profile + ' route')) map.removeLayer(profile + ' route');
+        if (map.getSource(profile + ' route')) map.removeSource(profile + ' route');
+    });
+
+    ['start', 'end'].forEach(function(item) {
+        if (map.getLayer(item)) map.removeLayer(item);
+        if (map.getSource(item)) map.removeSource(item);
+    });
+
+    start = null;
+    end = null;
+}
+
+} // function demo
+
+run();
+
+
+</script>
+
+<!--
+<script>
+  var value = JSON.parse(document.getElementById('hello-data').textContent);
+  //console.log(value);
+</script>
+-->
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
