@@ -64,11 +64,9 @@
                 }
 
                 
+				vrpBuilder.addJob(Service.Builder.newInstance("3").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("3")).build());
 				vrpBuilder.addJob(Service.Builder.newInstance("4").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("4")).build());
 				vrpBuilder.addJob(Service.Builder.newInstance("5").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("5")).build());
-				vrpBuilder.addJob(Service.Builder.newInstance("6").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("6")).build());
-				vrpBuilder.addJob(Service.Builder.newInstance("7").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("7")).build());
-				vrpBuilder.addJob(Service.Builder.newInstance("3").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("3")).build());
 
 
 
@@ -78,21 +76,12 @@
 
             
 				VehicleRoutingTransportCostsMatrix.Builder costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
-				costMatrixBuilder.addTransportDistance("0", "4", 116.1619);
-				costMatrixBuilder.addTransportDistance("0", "5", 142.5136);
-				costMatrixBuilder.addTransportDistance("0", "6", 115.053);
-				costMatrixBuilder.addTransportDistance("0", "7", 44.404199999999996);
-				costMatrixBuilder.addTransportDistance("0", "3", 82.3287);
-				costMatrixBuilder.addTransportDistance("4", "5", 58.097500000000004);
-				costMatrixBuilder.addTransportDistance("4", "6", 52.095400000000005);
-				costMatrixBuilder.addTransportDistance("4", "7", 95.8285);
-				costMatrixBuilder.addTransportDistance("5", "6", 14.1058);
-				costMatrixBuilder.addTransportDistance("5", "7", 50.8512);
-				costMatrixBuilder.addTransportDistance("6", "7", 57.9672);
-				costMatrixBuilder.addTransportDistance("3", "4", 33.3309);
-				costMatrixBuilder.addTransportDistance("3", "5", 38.8407);
-				costMatrixBuilder.addTransportDistance("3", "6", 32.8385);
-				costMatrixBuilder.addTransportDistance("3", "7", 68.4556);
+				costMatrixBuilder.addTransportDistance("0", "3", 87.5837);
+				costMatrixBuilder.addTransportDistance("0", "4", 121.6516);
+				costMatrixBuilder.addTransportDistance("0", "5", 97.2987);
+				costMatrixBuilder.addTransportDistance("3", "4", 48.5345);
+				costMatrixBuilder.addTransportDistance("3", "5", 36.4125);
+				costMatrixBuilder.addTransportDistance("4", "5", 57.8472);
 
 
 

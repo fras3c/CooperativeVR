@@ -173,7 +173,7 @@ def BuildDistanceGraph(clienti1, clienti2):
 
     clienti = Merge(clienti1, clienti2)
 
-    params = (('access_token', 'pk.eyJ1IjoiaWN0c3VkIiwiYSI6ImNqdjJmbmR5ZjA0YW80ZW5taG1yaDFxcmgifQ.N2ggfxhBwmp2woNno3X7CQ'),)
+    params = (('access_token', 'pk.eyJ1IjoiZmx1bmljYWwiLCJhIjoiY2p3cnhnNTUzMDNqMTN5bzJ4cGhhYXVlbSJ9.cQBQ_HN7wFXRWO4cjVph3Q'),)
 
     DG = {} # Distance Graph
 
@@ -184,6 +184,7 @@ def BuildDistanceGraph(clienti1, clienti2):
                     "https://api.mapbox.com/optimized-trips/v1/mapbox/driving/" + str(coord1[1]) + "," + str(
                         coord1[0]) + ";" + str(coord2[1]) + "," + str(coord2[0]), params=params)
                 json_data = json.loads(response.text)
+#                print(json_data)
                 # distance = float(json_data['trips'][0]['distance'])
                 distance = float(json_data['trips'][0]['legs'][0]['distance'])
                 DG[(index1, index2)] = distance * 0.001

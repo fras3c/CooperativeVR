@@ -75,9 +75,9 @@
 
             
 				VehicleRoutingTransportCostsMatrix.Builder costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
-				costMatrixBuilder.addTransportDistance("0", "1", 44.5799);
-				costMatrixBuilder.addTransportDistance("0", "2", 80.9505);
-				costMatrixBuilder.addTransportDistance("1", "2", 25.3373);
+				costMatrixBuilder.addTransportDistance("0", "1", 87.241);
+				costMatrixBuilder.addTransportDistance("0", "2", 83.7313);
+				costMatrixBuilder.addTransportDistance("1", "2", 126.0737);
 
 
 
