@@ -25,7 +25,7 @@
      * @author Francesco
      * creato il 10/nov/2017 14:59:56
      */
-    public class Test2 {
+    public class Test1 {
 
           public static void main(String[] args) {
                 /*
@@ -64,9 +64,9 @@
                 }
 
                 
+				vrpBuilder.addJob(Service.Builder.newInstance("1").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("1")).build());
+				vrpBuilder.addJob(Service.Builder.newInstance("2").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("2")).build());
 				vrpBuilder.addJob(Service.Builder.newInstance("3").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("3")).build());
-				vrpBuilder.addJob(Service.Builder.newInstance("4").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("4")).build());
-				vrpBuilder.addJob(Service.Builder.newInstance("5").addSizeDimension(WEIGHT_INDEX, 1).setLocation(Location.newInstance("5")).build());
 
 
 
@@ -76,12 +76,12 @@
 
             
 				VehicleRoutingTransportCostsMatrix.Builder costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);
-				costMatrixBuilder.addTransportDistance("0", "3", 87.25880000000001);
-				costMatrixBuilder.addTransportDistance("0", "4", 61.7394);
-				costMatrixBuilder.addTransportDistance("0", "5", 59.1746);
-				costMatrixBuilder.addTransportDistance("3", "4", 40.0712);
-				costMatrixBuilder.addTransportDistance("3", "5", 20.0203);
-				costMatrixBuilder.addTransportDistance("4", "5", 60.1299);
+				costMatrixBuilder.addTransportDistance("0", "1", 116.5278);
+				costMatrixBuilder.addTransportDistance("0", "2", 85.8165);
+				costMatrixBuilder.addTransportDistance("0", "3", 35.0814);
+				costMatrixBuilder.addTransportDistance("1", "2", 111.556);
+				costMatrixBuilder.addTransportDistance("1", "3", 124.554);
+				costMatrixBuilder.addTransportDistance("2", "3", 50.8224);
 
 
 

@@ -103,33 +103,7 @@
      </services>
      <solutions>
           <solution>
-               <cost>291.2641</cost>
-               <routes>
-                    <route>
-                         <driverId>noDriver</driverId>
-                         <vehicleId>Vehicle_0</vehicleId>
-                         <start>0.0</start>
-                         <act type="service">
-                              <serviceId>5</serviceId>
-                              <arrTime>0.0</arrTime>
-                              <endTime>0.0</endTime>
-                         </act>
-                         <act type="service">
-                              <serviceId>4</serviceId>
-                              <arrTime>0.0</arrTime>
-                              <endTime>0.0</endTime>
-                         </act>
-                         <act type="service">
-                              <serviceId>3</serviceId>
-                              <arrTime>0.0</arrTime>
-                              <endTime>0.0</endTime>
-                         </act>
-                         <end>0.0</end>
-                    </route>
-               </routes>
-          </solution>
-          <solution>
-               <cost>291.2641</cost>
+               <cost>181.00549999999998</cost>
                <routes>
                     <route>
                          <driverId>noDriver</driverId>
@@ -141,12 +115,38 @@
                               <endTime>0.0</endTime>
                          </act>
                          <act type="service">
+                              <serviceId>3</serviceId>
+                              <arrTime>0.0</arrTime>
+                              <endTime>0.0</endTime>
+                         </act>
+                         <act type="service">
+                              <serviceId>4</serviceId>
+                              <arrTime>0.0</arrTime>
+                              <endTime>0.0</endTime>
+                         </act>
+                         <end>0.0</end>
+                    </route>
+               </routes>
+          </solution>
+          <solution>
+               <cost>181.00549999999998</cost>
+               <routes>
+                    <route>
+                         <driverId>noDriver</driverId>
+                         <vehicleId>Vehicle_1</vehicleId>
+                         <start>0.0</start>
+                         <act type="service">
                               <serviceId>4</serviceId>
                               <arrTime>0.0</arrTime>
                               <endTime>0.0</endTime>
                          </act>
                          <act type="service">
                               <serviceId>3</serviceId>
+                              <arrTime>0.0</arrTime>
+                              <endTime>0.0</endTime>
+                         </act>
+                         <act type="service">
+                              <serviceId>5</serviceId>
                               <arrTime>0.0</arrTime>
                               <endTime>0.0</endTime>
                          </act>

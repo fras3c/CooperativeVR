@@ -16,7 +16,6 @@
       margin: 0;
       padding: 0;
     }
-
     #map {
       position: absolute;
       left: 0;
@@ -35,7 +34,7 @@
     #reset {
       position: relative;
       bottom: 25px;
-      left: 20px;
+      left: 20px; 
       z-index: 999;
     }
 
@@ -48,7 +47,7 @@
       margin-bottom: 2rem;
       background-color: #e9ecef;
       border-radius: .3rem;
-      height: 100%;
+      height: 100%; /* panenno input e mappa*/
     }
 
     .container-fluid {
@@ -60,8 +59,8 @@
       height: 300px;
     }
     .round {
-      border-radius: 3px;
-      margin-top: 50px;
+      border-radius: 5px; /*Box dei risultati*/
+      margin-top: 50px; /*50px*/
     }
   </style>
   <!-- <link rel="canonical" href="https://labs.mapbox.com/bites/00321/" > -->
@@ -71,8 +70,8 @@
   <!-- <a href='#' id='reset' class='button fill-darken1'>reset</a> -->
 
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-5 mb-4">
+    <div class="row justify-content-end">
+      <div class="col-lg-4 mb-4">
         <div class="jumbotron mt-3">
           <h1>Progetto NextSHOP</h1>
           <p class="lead">Prototipo LastMile.</p>
@@ -98,14 +97,14 @@
               <tr>Deposito</tr>
               <td style="border: none">
                 Lat:
-                <input id="latDep" type="text" size="16" >
+                <input id="latDep" type="text" size="14" >
                 Lon:   
-                <input id="lonDep" type="text" size="16"> 
+                <input id="lonDep" type="text" size="14"> 
               </td>
             </table> 
           </br>
             <p>Seleziona il numero di clienti che gli spedizioniere dovranno servire.</p>
-            Spedizioniere 1 
+            Primo Spedizioniere 
             <select class="form-control" id="selezioneSpedizione1" onchange="inputSpedizioniereX('tableIN1','selezioneSpedizione1','labelIN1')">
               <option>0</option>
               <option>1</option>
@@ -124,7 +123,7 @@
 
           </br>
 
-            Spedizioniere 2 
+            Secondo Spedizioniere 
             <select class="form-control" id="selezioneSpedizione2" onchange="inputSpedizioniereX('tableIN2','selezioneSpedizione2','labelIN2')">
               <option>0</option>
               <option>1</option>
@@ -148,7 +147,6 @@
           <label id="checkManual" for="buttonLoadManual"></label>
           </div>
           
-
           <hr class="my-4">
 
           <p>Oppure inserisci il numero di clienti del primo e del secondo spedizioniere e clicca su
@@ -223,8 +221,42 @@
           </li>
         </ul>
       </div>
-    </nav> -->    
-      <div class="col-lg-7">
+    </nav> -->   
+      <div class="col-sm-4  mb-4"> 
+          <div class="jumbotron mt-3"> 
+            <h2>Tabella Consegne</h2>
+            </br>
+            <h5>Primo Spedizioniere</h5>
+            <table id='tableCons1' class="table">
+              <thead style="background-color: #0066DB; color:white">
+                  <tr>
+                      <th>Consegna</th>
+                      <th>Latitudine</th>
+                      <th>Longitudine</th>
+                    </tr>
+              </thead>
+              <tbody id="bodyTable1" style="font-size: 15px">
+              </tbody>
+            </table> 
+
+          </br>
+          <h5>Secondo Spedizioniere</h5>
+          <table id='tableCons2' class="table">
+            <thead style="background-color: #0066DB; color:white">
+                <tr>
+                    <th>Consegna</th>
+                    <th>Latitudine</th>
+                    <th>Longitudine</th>
+                  </tr>
+            </thead>
+            <tbody id="bodyTable2" style="font-size: 15px">   
+            </tbody>
+          </table> 
+                
+        </div>
+      </div>
+                
+      <div class="col-lg-4">
         <div id='map'></div>
         <div class='clearfix contain'>
           <div class='pin-topright space-right2 space-top2 width28 pad2x pad1y round fill-white'>
@@ -254,7 +286,7 @@
       </div>
     </div>
   </div>
-  </div>
+
 {{ value|json_script:"hello-data" }}
 
   <script>
@@ -267,12 +299,12 @@
     var obj = {};
 
     mapboxgl.accessToken = 'pk.eyJ1IjoiYWFyb25saWRtYW4iLCJhIjoiNTVucTd0TSJ9.wVh5WkYXWJSBgwnScLupiQ';
-
+//#9/38.9305/17.1289
     var map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v9',
-      center: [16.48757, 38.92574],
-      zoom: 10,
+      center: [17.1289, 38.9305],
+      zoom: 9,
       hash: true
     });
 
@@ -303,7 +335,6 @@
         processData: false,
         contentType: false,
         complete: function(){
-          document.getElementById("loadingFile").style.visibility="hidden";
           document.getElementById(2).innerHTML = "Nessun dato.";
         },
         success: function (response) {
@@ -313,10 +344,12 @@
             var clienti1 = value['clienti1'];
             var rotta1 = value['rotta1'];
             var costo1 = parseFloat(Math.round(value['costo1'] * 100) / 100).toFixed(2);
+            createTableConsegne('bodyTable1',clienti1,rotta1);
 
             var clienti2 = value['clienti2'];
             var rotta2 = value['rotta2'];
             var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
+            createTableConsegne('bodyTable2',clienti2,rotta2);
 
             run3(clienti1, rotta1, costo1, '0', true);
             run3(clienti2, rotta2, costo2, '1', false);
@@ -369,9 +402,11 @@
         td.style.border='none'
         td.append((i+1)+") Lat:  ");
         var inputLat=document.createElement("input");
+        inputLat.setAttribute('size',6)
         td.appendChild(inputLat);
         td.append("       Lon:  ");
         var inputLon=document.createElement("input");
+        inputLon.setAttribute('size',6)
         td.appendChild(inputLon);
         tr.appendChild(td);
         table.appendChild(tr);
@@ -418,10 +453,12 @@
             var clienti1 = value['clienti1'];
             var rotta1 = value['rotta1'];
             var costo1 = parseFloat(Math.round(value['costo1'] * 100) / 100).toFixed(2);
+            createTableConsegne('bodyTable1',clienti1,rotta1);
 
             var clienti2 = value['clienti2'];
             var rotta2 = value['rotta2'];
             var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
+            createTableConsegne('bodyTable2',clienti2,rotta2);
 
             run3(clienti1, rotta1, costo1, '0', true);
             run3(clienti2, rotta2, costo2, '1', false);
@@ -437,6 +474,49 @@
         }
       });
       return false;
+    }
+
+    function createTableConsegne(tableBodyCod, client, route){
+      var tableBody=document.getElementById(tableBodyCod);
+      tableBody.innerHTML="";
+      client[0];
+      coords = client[0];
+      lat = coords[0];
+      lon = coords[1];
+      var tr=document.createElement('tr');
+      var tdNum=document.createElement('td');
+      tdNum.style.backgroundColor="white"
+      tdNum.append("Deposito(0)")
+      tr.appendChild(tdNum);
+      var tdLat=document.createElement('td');
+      tdLat.style.backgroundColor="white"
+      tdLat.append(lat)
+      tr.appendChild(tdLat);
+      var tdLon=document.createElement('td');
+      tdLon.style.backgroundColor="white"
+      tdLon.append(lon)
+      tr.appendChild(tdLon);
+      tableBody.appendChild(tr);
+      for(var i=0;i<route[0][0].length;i++){
+        var key=parseInt(route[0][0][i]);
+        coords = client[key];
+        lat = coords[0];
+        lon = coords[1];
+        var tr=document.createElement('tr');
+        var tdNum=document.createElement('td');
+        tdNum.style.backgroundColor="white"
+        tdNum.append(key)
+        tr.appendChild(tdNum);
+        var tdLat=document.createElement('td');
+        tdLat.style.backgroundColor="white"
+        tdLat.append(lat)
+        tr.appendChild(tdLat);
+        var tdLon=document.createElement('td');
+        tdLon.style.backgroundColor="white"
+        tdLon.append(lon)
+        tr.appendChild(tdLon);
+        tableBody.appendChild(tr);
+      }
     }
 
 
@@ -467,10 +547,12 @@
           var clienti1 = value['clienti1'];
           var rotta1 = value['rotta1'];
           var costo1 = parseFloat(Math.round(value['costo1'] * 100) / 100).toFixed(2);
+          createTableConsegne('bodyTable1',clienti1,rotta1);
 
           var clienti2 = value['clienti2'];
           var rotta2 = value['rotta2'];
           var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
+          createTableConsegne('bodyTable2',clienti2,rotta2);
 
           run3(clienti1, rotta1, costo1, '0', true);
           run3(clienti2, rotta2, costo2, '1', false);
@@ -538,7 +620,7 @@
     }
     */
     function cooperate() {
-
+      
       var clienti1 = value['clienti1'];
       var clienti2 = value['clienti2'];
       /*
@@ -561,16 +643,19 @@
         async: false,
         dataType: 'json',
         success: function (response) {
+          
           value = JSON.parse(JSON.stringify(response));
           //console.log("cooperate: ");
           //console.log(value);
           var clienti1 = value['clienti1'];
           var rotta1 = value['rotta1'];
           var costo1 = parseFloat(Math.round(value['costo1'] * 100) / 100).toFixed(2);
+          createTableConsegne('bodyTable1',clienti1,rotta1);
 
           var clienti2 = value['clienti2'];
           var rotta2 = value['rotta2'];
           var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
+          createTableConsegne('bodyTable2',clienti2,rotta2);
 
           var risultato = value['risultato'].split(';')
           var costoIniziale1 = parseFloat(Math.round(risultato[0] * 100) / 100).toFixed(2);
@@ -586,6 +671,7 @@
             testo += "Il numero di clienti scambiato è pari a " + risultato[3] + " con un risparmio di " + parseFloat(Math.round(risultato[2] * 100) / 100).toFixed(2) + " km.";
             document.getElementById(2).innerHTML = testo;
           }
+          
           //run3.clearMap();
         },
         error: function (err) {
@@ -684,7 +770,26 @@
             'circle-color': color//'#FF0000'//profiles.driving.color
           }
         });
+        if(key==0){
         map.addLayer({
+          "id": key.toString() + "-label",
+          "type": "symbol",
+          "source": key.toString(),
+          "layout": {
+            "text-field": "D",
+            "text-font": [
+              "DIN Offc Pro Medium",
+              "Arial Unicode MS Bold"
+            ],
+            "text-size": 12
+          },
+          "paint": {
+            "text-color": TextColor
+          }
+        });
+        }
+        else{
+          map.addLayer({
           "id": key.toString() + "-label",
           "type": "symbol",
           "source": key.toString(),
@@ -700,6 +805,7 @@
             "text-color": TextColor
           }
         });
+        }
         OggettiDaEliminare.push(key.toString() + "-label");
       });
 

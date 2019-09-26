@@ -6,6 +6,7 @@ import requests
 import json
 import xml.etree.ElementTree as ET
 import csv
+import sys 
 
 def BuildCode(nrVehicles, capacity, services, costMatrix, filename):
 
@@ -113,16 +114,22 @@ def BuildCode(nrVehicles, capacity, services, costMatrix, filename):
         '''
     with open(filename + '.java', 'w') as the_file:
         the_file.write(code)
-
+      
 def compile_java(java_file):
-    subprocess.check_call(['javac', '-cp', '.:./libs/*', java_file])
+    lib='.:./libs/*'
+    if sys.platform == 'win32':
+        lib='.;./libs/*'
+    subprocess.check_call(['javac', '-cp', lib, java_file])
 
 def execute_java(java_file):
     java_class,ext = os.path.splitext(java_file)
-    cmd = ['java', '-cp', '.:./libs/*', java_class]
+    lib='.:./libs/*'
+    if sys.platform == 'win32':
+        lib='.;./libs/*'
+    cmd = ['java', '-cp', lib, java_class]
     #proc = subprocess.Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, encoding='utf8')
     try:
-        ans = check_output(['java', '-cp', '.:./libs/*', java_class])
+        ans = check_output(['java', '-cp', lib, java_class])
     except subprocess.CalledProcessError as e:
         raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
     #stdout,stderr = proc.communicate(stdin)
@@ -136,7 +143,6 @@ def execute_java(java_file):
     return route, costs
 
     #print ('This was "' + stdout + '"')
-
 
 def GenerateCoordinates(nrClients):
     N = 39.33
@@ -184,11 +190,11 @@ def BuildDistanceGraph(clienti1, clienti2):
                     "https://api.mapbox.com/optimized-trips/v1/mapbox/driving/" + str(coord1[1]) + "," + str(
                         coord1[0]) + ";" + str(coord2[1]) + "," + str(coord2[0]), params=params)
                 json_data = json.loads(response.text)
-#                print(json_data)
-                # distance = float(json_data['trips'][0]['distance'])
+                #print(json_data)
+                #distance = float(json_data['trips'][0]['distance'])
                 distance = float(json_data['trips'][0]['legs'][0]['distance'])
                 DG[(index1, index2)] = distance * 0.001
-
+    print("=============DG==================")         
     print(DG)
 
     return DG
@@ -820,6 +826,14 @@ def cooperation(clienti1, clienti2):
         value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : s1opt, 'rotta2' : route2, 'costo2' : s2opt, 'risultato': risultato}
 
         return value
+
+def upload(clienti):  
+    DG = BuildDistanceGraph(clienti[0], clienti[1])
+    BuildProblem(2, 100, clienti[0], DG, "Test1")
+    BuildProblem(2, 100, clienti[1], DG, "Test2")
+    s = solve()
+
+    return clienti, s
 
 
 def main():
