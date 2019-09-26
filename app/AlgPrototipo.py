@@ -552,6 +552,7 @@ def run(noc1, noc2):
 def demo(noc1, noc2):
 
     clienti = run(noc1, noc2)
+    #print(clienti)
     DG = BuildDistanceGraph(clienti[0], clienti[1])
     BuildProblem(2, 100, clienti[0], DG, "Test1")
     BuildProblem(2, 100, clienti[1], DG, "Test2")

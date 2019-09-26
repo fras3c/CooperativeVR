@@ -18,9 +18,10 @@ from django import forms
 
 @api_view(['POST'])
 def without_optimization_api(request):
-    print("okkkkk")
-    inputDati = ReadJSON.read(request.data)
-    print(inputDati)
+    
+ #   inputDati = ReadJSON.read(request.data)
+  #  print(inputDati)
+    inputDati = parseData(request.data)
     clienti, s = AlgPrototipo.upload(inputDati)
     clienti1 = clienti[0]
     route1, cost1 = s[0]
@@ -200,7 +201,19 @@ def index(request):
 class UploadForm(forms.Form):
     file=forms.FileField()
 
+def parseData(inputDati):
+    ris = []
+    nocs = []
+    for shipper in inputDati:
+        nocs.append(shipper['noc'])
+        clienti = {}
+        for cliente in shipper['pos'].items():
+            clienti[int(cliente[0])] = tuple(cliente[1])
+        ris.append(clienti)
+    for x in nocs:
+        ris.append(int(x))
 
+    return ris
 
 @csrf_exempt
 def upload(request):
@@ -209,10 +222,18 @@ def upload(request):
         form=UploadForm(request.POST, request.FILES)
         if form.is_valid():
             pathFile=saveFile(request.FILES['file'])
-            inputDati=ReadJSON.analyzeFile(pathFile)
-            if inputDati == "File non conforme":
-                return HttpResponse("-1")
+            inputDati = None
+            with open(pathFile, 'r') as f:
+                inputDati = json.load(f)
 
+            if inputDati == None:
+                return HttpResponse("-1")
+            #inputDati = ReadJSON.jsonToStructure(inputDati)
+            #inputDati=ReadJSON.analyzeFile(pathFile)
+            #if inputDati == "File non conforme":
+            #    return HttpResponse("-1")
+
+            inputDati = parseData(inputDati)             
             clienti, s = AlgPrototipo.upload(inputDati)
             clienti1 = clienti[0]
             route1, cost1 = s[0]
