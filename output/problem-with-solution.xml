@@ -55,21 +55,6 @@
           </type>
      </vehicleTypes>
      <services>
-          <service id="3" type="service">
-               <location>
-                    <id>3</id>
-               </location>
-               <capacity-dimensions>
-                    <dimension index="0">1</dimension>
-               </capacity-dimensions>
-               <duration>0.0</duration>
-               <timeWindows>
-                    <timeWindow>
-                         <start>0.0</start>
-                         <end>1.7976931348623157E308</end>
-                    </timeWindow>
-               </timeWindows>
-          </service>
           <service id="4" type="service">
                <location>
                     <id>4</id>
@@ -100,22 +85,37 @@
                     </timeWindow>
                </timeWindows>
           </service>
+          <service id="6" type="service">
+               <location>
+                    <id>6</id>
+               </location>
+               <capacity-dimensions>
+                    <dimension index="0">1</dimension>
+               </capacity-dimensions>
+               <duration>0.0</duration>
+               <timeWindows>
+                    <timeWindow>
+                         <start>0.0</start>
+                         <end>1.7976931348623157E308</end>
+                    </timeWindow>
+               </timeWindows>
+          </service>
      </services>
      <solutions>
           <solution>
-               <cost>181.00549999999998</cost>
+               <cost>265.0825</cost>
                <routes>
                     <route>
                          <driverId>noDriver</driverId>
                          <vehicleId>Vehicle_1</vehicleId>
                          <start>0.0</start>
                          <act type="service">
-                              <serviceId>5</serviceId>
+                              <serviceId>6</serviceId>
                               <arrTime>0.0</arrTime>
                               <endTime>0.0</endTime>
                          </act>
                          <act type="service">
-                              <serviceId>3</serviceId>
+                              <serviceId>5</serviceId>
                               <arrTime>0.0</arrTime>
                               <endTime>0.0</endTime>
                          </act>
@@ -129,24 +129,24 @@
                </routes>
           </solution>
           <solution>
-               <cost>181.00549999999998</cost>
+               <cost>265.0825</cost>
                <routes>
                     <route>
                          <driverId>noDriver</driverId>
                          <vehicleId>Vehicle_1</vehicleId>
                          <start>0.0</start>
                          <act type="service">
-                              <serviceId>4</serviceId>
-                              <arrTime>0.0</arrTime>
-                              <endTime>0.0</endTime>
-                         </act>
-                         <act type="service">
-                              <serviceId>3</serviceId>
+                              <serviceId>6</serviceId>
                               <arrTime>0.0</arrTime>
                               <endTime>0.0</endTime>
                          </act>
                          <act type="service">
                               <serviceId>5</serviceId>
+                              <arrTime>0.0</arrTime>
+                              <endTime>0.0</endTime>
+                         </act>
+                         <act type="service">
+                              <serviceId>4</serviceId>
                               <arrTime>0.0</arrTime>
                               <endTime>0.0</endTime>
                          </act>

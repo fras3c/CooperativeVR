@@ -1,5 +1,26 @@
 import json
 
+def read(jsonInput):
+    #legge il file JSON e lo restituisce sotto forma
+    #di lista di stringhe
+    print(jsonInput)
+    s=""
+    myList=[]
+    for line in jsonInput:
+        line=line.rstrip()
+        if line == "{":
+            s=line
+        if line !="{":
+            s=s+line
+        if line =="}":
+            myList.append(s)
+            s=""
+            continue
+        if line[len(line)-1:len(line)]=="}":
+            myList.append(s)
+            s=""
+    return myList
+
 def readFileJSON(pathFile):
     #legge il file JSON e lo restituisce sotto forma
     #di lista di stringhe
@@ -21,6 +42,7 @@ def readFileJSON(pathFile):
         if line[len(line)-1:len(line)]=="}":
             myList.append(s)
             s=""
+    print(myList)
     return myList
 
 def fileToJSON(path):

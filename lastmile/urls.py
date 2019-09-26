@@ -16,8 +16,13 @@ Including another URLconf
 from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url, include
+from app import views
+
 
 urlpatterns = [
     path('', include('app.urls')),
+    url(r'^api/demo$', views.demo_api),
+    url(r'^api/without-optimization$', views.without_optimization_api),
     path('admin/', admin.site.urls),
 ]
