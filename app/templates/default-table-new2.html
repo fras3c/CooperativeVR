@@ -22,8 +22,7 @@
       position: absolute;
       left: 0;
       top: 16px;
-      height: 100%;
-      width: 100%;
+      width: 98%;
     }
 
     #mapbak {
@@ -38,6 +37,10 @@
       bottom: 25px;
       left: 20px;
       z-index: 999;
+    }
+
+    #seconda-colonna {
+      margin-left: -15px;
     }
 
     .mb-4,.my-4 {
@@ -88,10 +91,12 @@
 
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-4 mb-4">
+      <div class="col-md-4 mb-4">
         <div class="jumbotron mt-3">
           <h1>Progetto NextSHOP</h1>
-          <p class="lead">Prototipo LastMile.</p>
+          <h3>Prototipo LastMile</h3>
+	  <br> <br>
+          <p class="lead">Opzione 1</p>
           <!-- <a class="btn btn-lg btn-primary" href="/demo/" role="button">Demo &raquo;</a> -->
           <p>Acquisisci le coordinate delle posizioni dei clienti da file JSON.</p>
           <div id="divForm" class="custom-file">
@@ -107,9 +112,9 @@
           </div>
 
           <hr class="my-4">
-
+          <p class="lead">Opzione 2</p>
           <div id="spedizioniereInput1" class="form-group">
-            <p>Oppure acquisisci le coordinate delle posizioni dei clienti e del deposito in modo manuale, poi clicca su
+            <p>Inserisci le coordinate delle posizioni dei clienti e del deposito, poi clicca su
               Invia.</p>
             <p>Inserire latitudine e longitudine per ogni punto di consegna.</p>
             <table id='tableDEP'>
@@ -172,8 +177,8 @@
           </div>
 
           <hr class="my-4">
-
-          <p>Oppure inserisci il numero di clienti del primo e del secondo spedizioniere e clicca su
+          <p class="lead">Opzione 3</p>
+          <p>Inserisci il numero di clienti del primo e del secondo spedizioniere e clicca su
             Demo!<br>L'applicazione genererà automaticamente le posizioni dei clienti sulla mappa.</p>
           <div class="form-group">
             <label for="exampleFormControlSelect1">Seleziona il numero di clienti da servire per il primo
@@ -248,14 +253,14 @@
       </div>
     </nav> -->
 
-      <div class="col-lg-8">
+      <div class="col-md-8">
 
         <div class="row">
         
-          <div class="col mb-4">
+          <div id="seconda-colonna" class="col mb-4">
             <div class="jumbotron mt-3">
               <div class="row">
-                  <h2>Tabella Consegne</h2>
+                  <h2>Riepilogo delle consegne</h2>
               </div>
 
               <div class="row">
@@ -449,7 +454,7 @@
         var tr = document.createElement('tr');
         var td = document.createElement('td');
         td.style.border = 'none'
-        td.append((i + 1) + ") Lat:  ");
+        td.append("[" + (i + 1) + "] Lat:  ");
         var inputLat = document.createElement("input");
         inputLat.setAttribute('size', 6)
         td.appendChild(inputLat);
