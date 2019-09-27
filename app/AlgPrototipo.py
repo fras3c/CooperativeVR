@@ -122,7 +122,7 @@ def compile_java(java_file):
     subprocess.check_call(['javac', '-cp', lib, java_file])
 
 def execute_java(java_file):
-    java_class,ext = os.path.splitext(java_file)
+    java_class, ext = os.path.splitext(java_file)
     lib='.:./libs/*'
     if sys.platform == 'win32':
         lib='.;./libs/*'
@@ -195,7 +195,7 @@ def BuildDistanceGraph(clienti1, clienti2):
                 distance = float(json_data['trips'][0]['legs'][0]['distance'])
                 DG[(index1, index2)] = distance * 0.001
     print("=============DG==================")         
-    print(DG)
+    #print(DG)
 
     return DG
 
@@ -465,7 +465,9 @@ def parseXML(xmlfile):
             costs2 = []
             optimal_cost = cost
             rotte = solution.find('routes')
-            #print(cost)
+            if cost == 0:
+                return routes2, cost
+            #print("cost: " + str(cost))
             for route in rotte:
                 # print(service.get('id'))
                 activities = []
@@ -568,7 +570,9 @@ def cooperation(clienti1, clienti2):
     noc1 = len(clienti1) - 1
     noc2 = len(clienti2) - 1
     clienti = [clienti1, clienti2]
-
+   # print("inizio----------------")
+  #  print(clienti)
+  #  print("fine----------------")
     DG = BuildDistanceGraph(clienti[0], clienti[1])
     BuildProblem(2, 100, clienti[0], DG, "Test1")
     BuildProblem(2, 100, clienti[1], DG, "Test2")
@@ -637,6 +641,39 @@ def cooperation(clienti1, clienti2):
 
             print("")
             print("")
+
+            if z1 == 0.0:
+                print("No more exchanges available. \nQuitting...")
+                print("Sum of costs --> " + str(z1 + z2))
+
+                print("Cooperation gain --> " + str((old_z1 + old_z2) - (z1 + z2)))
+
+                print(route1, route2, z1, z2)
+                risultato = str(s1_sol)+";"+str(s2_sol)
+                risultato += ";" + str((old_z1 + old_z2) - (z1 + z2)) + ";" + str(i)
+
+                #risultato = {sol_s1_iniziale; sol_s2_iniziale; gain; steps}
+
+                value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : z1, 'rotta2' : route2, 'costo2' : z2, 'risultato' : risultato}
+
+                return value
+
+            elif z2 == 0.0:
+                print("No more exchanges available. \nQuitting...")
+                print("Sum of costs --> " + str(z1 + z2))
+
+                print("Cooperation gain --> " + str((old_z1 + old_z2) - (z1 + z2)))
+
+                print(route2, route1, z2, z1)
+                risultato = str(s2_sol)+";"+str(s1_sol)
+                risultato += ";" + str((old_z1 + old_z2) - (z1 + z2)) + ";" + str(i)
+
+                #risultato = {sol_s1_iniziale; sol_s2_iniziale; gain; steps}
+
+                value = {'clienti1' : clienti2, 'clienti2' : clienti1, 'rotta1' : route2, 'costo1' : z2, 'rotta2' : route1, 'costo2' : z1, 'risultato' : risultato}
+
+                return value
+                
 
             if i == 0:
                 writer.writerow({'step': str(i), 'nor1': str(len(route1)), 'nor2': str(len(route2)),

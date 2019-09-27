@@ -104,7 +104,7 @@
               <input type="file" name="file" class="custom-file-input" id="customFile">
               <label id="labelFile" class="custom-file-label" for="customFile">Scegli file</label>
               </br></br>
-              <button id="buttonLoad" onclick="submitFile()" type="submit" class="btn btn-primary">Carica
+              <button id="buttonLoad" onclick="submitFile()" type="submit" class="btn btn-primary" disabled>Carica
                 &raquo;</button>
               <!-- Label di caricamento -->
               <label id="checkFile" for="buttonLoad"></label>
@@ -339,14 +339,11 @@
 
   </div>
 
-  {{ value|json_script:"hello-data" }}
+  
 
   <script>
 
     var StartingIndex = 0;
-
-    var value = JSON.parse(document.getElementById('hello-data').textContent);
-
 
     var obj = {};
 
@@ -374,14 +371,21 @@
     var points = [];
 
     //Metodoti inseriti ora
+    var uploadedContent = "";
 
     function uploadFile(event) {
       event.preventDefault();
+
+     // alert(uploadedContent);
+      document.getElementById('checkFile').innerHTML = "Caricamento..."
+      /*
       var dataFile = new FormData($('#formUp').get(0));
       document.getElementById('checkFile').innerHTML = "Caricamento..."
+      */
       $.ajax({
         url: "/upload/",
         type: "POST",
+       /*
         data: dataFile,
         cache: false,
         processData: false,
@@ -389,6 +393,14 @@
         complete: function () {
           document.getElementById(2).innerHTML = "Nessun dato.";
         },
+
+        */
+
+        data: uploadedContent,
+        contentType: 'application/json;charset=UTF-8',
+        async: false,
+        dataType: 'json',
+
         success: function (response) {
           if (response != "-1") {
             value = JSON.parse(JSON.stringify(response));
@@ -402,8 +414,9 @@
             var rotta2 = value['rotta2'];
             var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
             createTableConsegne('bodyTable2', clienti2, rotta2);
-
+            c = 0;
             run3(clienti1, rotta1, costo1, '0', true);
+            c = 1;
             run3(clienti2, rotta2, costo2, '1', false);
 
             document.getElementById('checkFile').innerHTML = "Caricato  &#x2714";
@@ -421,11 +434,14 @@
       });
       return false;
     }
+
     function submitFile() {
       $('#formUp').submit(uploadFile)
     }
 
     function formChange() {
+
+      /**
       document.getElementById("demo").disabled = false
       document.getElementById('checkFile').innerHTML = ""
       document.getElementById('labelFile').innerHTML = "Scegli file"
@@ -435,6 +451,19 @@
         var name = fullPath.substring(index);
         document.getElementById('labelFile').innerHTML = name
       }
+      **/
+      $("#buttonLoad").prop("disabled",true);
+      var file = document.querySelector('input[type=file]').files[0];
+      document.getElementById('labelFile').innerHTML = file.name;
+      var reader = new FileReader();
+      
+      reader.onload = (function(f) {
+            return function(e) {
+                uploadedContent = e.target.result;
+                $("#buttonLoad").prop("disabled",false);
+            };
+        })(file);
+        reader.readAsText(file);
     }
 
     function inputSpedizioniereX(tableCod, selectSpedCod, labelCod) {
@@ -470,19 +499,19 @@
 
     function readTable(code, indice) {
       var table = document.getElementById('tableIN' + code);
-      var coord = '{"noc":' + (table.rows.length + 1) + ',"pos":[{';
+      var coord = '{';
       var latDep = document.getElementById('latDep').value
       var lonDep = document.getElementById('lonDep').value
-      coord = coord + '"0":"(' + latDep + ',' + lonDep + ')",';
+      coord = coord + '"0":[' + latDep + ',' + lonDep + '],';
       for (i = 0; i < table.rows.length; i++) {
         var lat = table.rows.item(i).cells[0].getElementsByTagName('input')[0].value;
         var lon = table.rows.item(i).cells[0].getElementsByTagName('input')[1].value;
-        coord = coord + '"' + indice + '":"(' + lat + ',' + lon + ')"';
+        coord = coord + '"' + indice + '":[' + lat + ',' + lon + ']';
         indice = indice + 1;
         if (i != table.rows.length - 1)
           coord = coord + ',';
       }
-      coord = coord + '}]}';
+      coord = coord + '}';
       return [coord, indice];
     }
 
@@ -490,15 +519,15 @@
       event.preventDefault();
       var valueSp1 = readTable(1, 1);
       var valueSp2 = readTable(2, valueSp1[1]);
-      var dataSend = valueSp1[0] + "\n" + valueSp2[0];
+      var dataSend = "[" + valueSp1[0] + ",\n" + valueSp2[0] + "]";
       document.getElementById('checkManual').innerHTML = "Caricamento...";
       $.ajax({
         url: "/manual/",
         type: "POST",
         data: dataSend,
-        cache: false,
-        processData: false,
-        contentType: 'charset=UTF-8',
+        contentType: 'application/json;charset=UTF-8',
+        async: false,
+        dataType: 'json',
         success: function (response) {
           if (response != -1) {
             value = JSON.parse(JSON.stringify(response));
@@ -513,8 +542,9 @@
             var rotta2 = value['rotta2'];
             var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
             createTableConsegne('bodyTable2', clienti2, rotta2);
-
+            c = 0;
             run3(clienti1, rotta1, costo1, '0', true);
+            c = 1;
             run3(clienti2, rotta2, costo2, '1', false);
             document.getElementById('checkManual').innerHTML = "Caricato  &#x2714";
           }
@@ -606,8 +636,9 @@
           var rotta2 = value['rotta2'];
           var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
           createTableConsegne('bodyTable2', clienti2, rotta2);
-
+          c = 0;
           run3(clienti1, rotta1, costo1, '0', true);
+          c = 1;
           run3(clienti2, rotta2, costo2, '1', false);
           //document.getElementById(2).innerHTML = "Nessun dato.";
           //document.location.reload(true);
@@ -672,6 +703,9 @@
                 });
     }
     */
+
+    var c = 0;
+
     function cooperate() {
 
       var clienti1 = value['clienti1'];
@@ -703,12 +737,12 @@
           var clienti1 = value['clienti1'];
           var rotta1 = value['rotta1'];
           var costo1 = parseFloat(Math.round(value['costo1'] * 100) / 100).toFixed(2);
-          createTableConsegne('bodyTable1', clienti1, rotta1);
+          //createTableConsegne('bodyTable1', clienti1, rotta1);
 
           var clienti2 = value['clienti2'];
           var rotta2 = value['rotta2'];
           var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
-          createTableConsegne('bodyTable2', clienti2, rotta2);
+          //createTableConsegne('bodyTable2', clienti2, rotta2);
 
           var risultato = value['risultato'].split(';')
           var costoIniziale1 = parseFloat(Math.round(risultato[0] * 100) / 100).toFixed(2);
@@ -718,8 +752,22 @@
             document.getElementById(2).innerHTML = "Non è stato possibile migliorare i costi con la cooperazione. I percorsi dei due spedizionieri sono invariati.";
           }
           else {
-            run3(clienti1, rotta1, costo1, '0', true);
-            run3(clienti2, rotta2, costo2, '1', false);
+            var flag = true;
+            c = 0;
+            if(rotta1.length > 0) {
+              run3(clienti1, rotta1, costo1, '0', flag);
+              flag = false;
+            } 
+            else {
+              document.getElementById(0).innerHTML = "Il costo totale per servire i propri clienti è pari a 0 km.";
+            }
+            c = 1;
+            if(rotta2.length > 0) {
+             run3(clienti2, rotta2, costo2, '1', flag);
+            }
+            else {
+              document.getElementById(1).innerHTML = "Il costo totale per servire i propri clienti è pari a 0 km.";
+            }
             var testo = "Buone notizie! I costi sono stati migliorati con la cooperazione! I costi dei due spedizionieri prima della cooperazione erano rispettivamente pari a " + costoIniziale1 + " km e " + costoIniziale2 + " km. ";
             testo += "Il numero di clienti scambiato è pari a " + risultato[3] + " con un risparmio di " + parseFloat(Math.round(risultato[2] * 100) / 100).toFixed(2) + " km.";
             document.getElementById(2).innerHTML = testo;
@@ -752,14 +800,14 @@
           if (map.getLayer(item)) map.removeLayer(item);
           if (map.getSource(item)) map.removeSource(item);
         });
-        c = 0;
+        //c = 0;
         points = [];
         StartingIndex = 0;
       }
       //      clearMap();
 
       colore = colors[c];
-      c++;
+      //c++;
 
       document.getElementById(IDrotta.toString()).innerHTML = "Il costo totale per servire i propri clienti è pari a " + costo + " km.";
       var api = 'https://api.mapbox.com/directions/v5/';

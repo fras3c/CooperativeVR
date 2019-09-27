@@ -23,6 +23,7 @@ from app import views
 urlpatterns = [
     path('', include('app.urls')),
     url(r'^api/demo$', views.demo_api),
-    url(r'^api/without-optimization$', views.without_optimization_api),
+    url(r'^api/no-optimization$', views.no_optimization_api),
+    url(r'^api/optimization$', views.optimization_api),
     path('admin/', admin.site.urls),
 ]
