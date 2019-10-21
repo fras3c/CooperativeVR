@@ -103,7 +103,7 @@
      </services>
      <solutions>
           <solution>
-               <cost>266.878</cost>
+               <cost>219.014</cost>
                <routes>
                     <route>
                          <driverId>noDriver</driverId>
@@ -129,7 +129,7 @@
                </routes>
           </solution>
           <solution>
-               <cost>266.878</cost>
+               <cost>219.014</cost>
                <routes>
                     <route>
                          <driverId>noDriver</driverId>

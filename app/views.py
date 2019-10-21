@@ -8,26 +8,35 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import ReadJSON
-from django import forms
+import time
 
 
-
-# Create your views here.
+#Creazioni Api
 
 @api_view(['POST'])
 def optimization_api(request):
-    
     clienti = parseData(request.data)
     value = AlgPrototipo.cooperation(clienti[0], clienti[1])
     return Response(value)
+    ''' Usato per effettuare i test di scalabilità
+    temp={}
+    tStartCop=time.time()*1000
+    value = AlgPrototipo.cooperationScalability(clienti[0], clienti[1], temp)
+    tEndCop=time.time()*1000
+    temp['Tot-Esec']=(tEndCop-tStartCop)
+    val=0
+    for i in temp:
+        if i != 'Tot-Esec':
+            val=val+temp[i]
+    t=temp['Tot-Esec']-val
+    temp['Scamb']=t
+    return Response(temp)
+    '''
 
 
 @api_view(['POST'])
 def no_optimization_api(request):
-    
- #   inputDati = ReadJSON.read(request.data)
-  #  print(inputDati)
+
     inputDati = parseData(request.data)
     clienti, s = AlgPrototipo.upload(inputDati)
     clienti1 = clienti[0]
@@ -40,29 +49,25 @@ def no_optimization_api(request):
 @api_view(['POST'])
 def demo_api(request):
     value = {}
- 
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     noc1 = int(body['noc1'])
     noc2 = int(body['noc2'])
-
-    print("Noc1", noc1)
-    print("Noc2", noc2)
-
     clienti, s = AlgPrototipo.demo(noc1, noc2)
     clienti1 = clienti[0]
     route1, cost1 = s[0]
-
-        #{0: (38.926, 16.4857), 1: (39.283913942532216, 16.434401280765925), 2: (39.05523863247818, 16.734295616438725), 3: (39.12481454466452, 16.669553003984852), 4: (39.27000123068061, 16.56065906064284), 5: (39.095311778709615, 16.34893874124117), 6: (39.00022937302457, 16.936617650408916), 7: (39.19007651998094, 16.316824079328395), 8: (39.242581105056914, 16.732473096255326), 9: (39.03409314993345, 16.872463600090224), 10: (39.04454422881649, 16.700485401090827)}
-
     clienti2 = clienti[1]
     route2, cost2 = s[1]
-        #value = {'lat1' : latitudine1, 'lon1': longitudine1, 'rotta1' : route1, 'costo1' : cost1, 'lat2' : latitudine2, 'lon2': longitudine2, 'rotta2' : route2, 'costo2' : cost2} #, 'deposito': [16.48757,38.92574], 'c1':[16.692104177184746, 39.18847606525372], 'c2':[16.380523533774532, 39.181744129419634]}
     value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : cost1, 'rotta2' : route2, 'costo2' : cost2}
-    #print(value)
-    
     return Response(value)
     #return Response(json.dumps(value))
+
+
+#Creazione viste
+
+@csrf_exempt
+def index(request):
+    return render(request, 'index.html')
 
 
 @csrf_exempt
@@ -123,6 +128,57 @@ def cooperation(request):
     return HttpResponse(json.dumps(value), content_type='application/json')
 
 @csrf_exempt
+def upload(request):
+    value = {}
+
+    if request.is_ajax():
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+    
+        inputDati = parseData(body)          
+        clienti, s = AlgPrototipo.upload(inputDati)
+        clienti1 = clienti[0]
+        route1, cost1 = s[0]
+
+         #{0: (38.926, 16.4857), 1: (39.283913942532216, 16.434401280765925), 2: (39.05523863247818, 16.734295616438725), 3: (39.12481454466452, 16.669553003984852), 4: (39.27000123068061, 16.56065906064284), 5: (39.095311778709615, 16.34893874124117), 6: (39.00022937302457, 16.936617650408916), 7: (39.19007651998094, 16.316824079328395), 8: (39.242581105056914, 16.732473096255326), 9: (39.03409314993345, 16.872463600090224), 10: (39.04454422881649, 16.700485401090827)}
+
+        clienti2 = clienti[1]
+        route2, cost2 = s[1]
+        #value = {'lat1' : latitudine1, 'lon1': longitudine1, 'rotta1' : route1, 'costo1' : cost1, 'lat2' : latitudine2, 'lon2': longitudine2, 'rotta2' : route2, 'costo2' : cost2} #, 'deposito': [16.48757,38.92574], 'c1':[16.692104177184746, 39.18847606525372], 'c2':[16.380523533774532, 39.181744129419634]}
+        value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : cost1, 'rotta2' : route2, 'costo2' : cost2}
+        print(value)
+    else:
+        print('no')
+    return HttpResponse(json.dumps(value), content_type='application/json')
+
+@csrf_exempt
+def manual(request):
+    value = {}
+    if request.is_ajax():
+        #body_unicode contiene la stringa da fare il parsing
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        inputDati = parseData(body)
+        print(inputDati)
+        clienti, s = AlgPrototipo.upload(inputDati)
+        clienti1 = clienti[0]
+        route1, cost1 = s[0]
+
+        #{0: (38.926, 16.4857), 1: (39.283913942532216, 16.434401280765925), 2: (39.05523863247818, 16.734295616438725), 3: (39.12481454466452, 16.669553003984852), 4: (39.27000123068061, 16.56065906064284), 5: (39.095311778709615, 16.34893874124117), 6: (39.00022937302457, 16.936617650408916), 7: (39.19007651998094, 16.316824079328395), 8: (39.242581105056914, 16.732473096255326), 9: (39.03409314993345, 16.872463600090224), 10: (39.04454422881649, 16.700485401090827)}
+
+        clienti2 = clienti[1]
+        route2, cost2 = s[1]
+        #value = {'lat1' : latitudine1, 'lon1': longitudine1, 'rotta1' : route1, 'costo1' : cost1, 'lat2' : latitudine2, 'lon2': longitudine2, 'rotta2' : route2, 'costo2' : cost2} #, 'deposito': [16.48757,38.92574], 'c1':[16.692104177184746, 39.18847606525372], 'c2':[16.380523533774532, 39.181744129419634]}
+        value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : cost1, 'rotta2' : route2, 'costo2' : cost2}
+        print(value)
+    else:
+        print('no')
+    return HttpResponse(json.dumps(value), content_type='application/json')
+
+
+
+'''
+@csrf_exempt
 def solve(request):
     value = {}
     if request.is_ajax():
@@ -160,7 +216,7 @@ def solve(request):
         print('no')
 
     return HttpResponse(json.dumps(value), content_type='application/json')
-'''
+
 @csrf_exempt
 def demobak(request):
     value = {}
@@ -198,14 +254,11 @@ for i in range(len(lats)):
 value = {'lat' : latitudine, 'lon': longitudine, 'rotta' : route, 'costo' : cost}#, 'deposito': [16.48757,38.92574], 'c1':[16.692104177184746, 39.18847606525372], 'c2':[16.380523533774532, 39.181744129419634]}
 '''
 
-@csrf_exempt
-def index(request):
-    return render(request, 'default-table-new2.html')#
-
-class UploadForm(forms.Form):
-    file=forms.FileField()
+#Metodo utilita'
 
 def parseData(inputDati):
+    '''il metodo crea la strutta dati
+    adatta per passarla in input al modulo AlgPrototipo'''
     ris = []
     for shipper in inputDati:        
         clienti = {}
@@ -214,94 +267,3 @@ def parseData(inputDati):
         ris.append(clienti)
 
     return ris
-
-@csrf_exempt
-def upload(request):
-
-    value = {}
-
-    if request.is_ajax():
-
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        
-        '''
-        form=UploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            pathFile=saveFile(request.FILES['file'])
-           '''
-        '''
-            inputDati = None
-            with open(pathFile, 'r') as f:
-                inputDati = json.load(f)
-
-
-            if inputDati == None:
-                return HttpResponse("-1")
-                '''
-            ##inputDati = ReadJSON.jsonToStructure(inputDati)
-            ##inputDati=ReadJSON.analyzeFile(pathFile)
-            ##if inputDati == "File non conforme":
-            ##    return HttpResponse("-1")
-
-        inputDati = parseData(body)
-            #inputDati = parseData(inputDati)             
-        clienti, s = AlgPrototipo.upload(inputDati)
-        clienti1 = clienti[0]
-        route1, cost1 = s[0]
-
-            #{0: (38.926, 16.4857), 1: (39.283913942532216, 16.434401280765925), 2: (39.05523863247818, 16.734295616438725), 3: (39.12481454466452, 16.669553003984852), 4: (39.27000123068061, 16.56065906064284), 5: (39.095311778709615, 16.34893874124117), 6: (39.00022937302457, 16.936617650408916), 7: (39.19007651998094, 16.316824079328395), 8: (39.242581105056914, 16.732473096255326), 9: (39.03409314993345, 16.872463600090224), 10: (39.04454422881649, 16.700485401090827)}
-
-        clienti2 = clienti[1]
-        route2, cost2 = s[1]
-            #value = {'lat1' : latitudine1, 'lon1': longitudine1, 'rotta1' : route1, 'costo1' : cost1, 'lat2' : latitudine2, 'lon2': longitudine2, 'rotta2' : route2, 'costo2' : cost2} #, 'deposito': [16.48757,38.92574], 'c1':[16.692104177184746, 39.18847606525372], 'c2':[16.380523533774532, 39.181744129419634]}
-        value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : cost1, 'rotta2' : route2, 'costo2' : cost2}
-        print(value)
-    else:
-        print('no')
-
-    return HttpResponse(json.dumps(value), content_type='application/json')
-
-def saveFile(file):
-    #salvataggio file del file in input tramite caricamento
-    pathFile="./app/output/myFile"
-    with open(pathFile, 'wb+') as destination:
-        for chunk in file.chunks():
-            destination.write(chunk)
-    return pathFile
-
-def writeFile(line):
-    #salvataggio su file delle coordinate manuali in input
-    pathFile="./app/output/myFile_Manual"
-    f=open(pathFile, 'w')
-    f.write(line)
-    f.close()
-    return pathFile
-
-@csrf_exempt
-def manual(request):
-    value = {}
-    if request.is_ajax():
-        #body_unicode contiene la stringa da fare il parsing
-        body_unicode = request.body.decode('utf-8')
-        #pathFile=writeFile(body_unicode)
-        #inputDati=ReadJSON.analyzeFile(pathFile) 
-        #if inputDati == "File non conforme":
-                #return HttpResponse(-1)
-        body = json.loads(body_unicode)
-        inputDati = parseData(body)
-        print(inputDati)
-        clienti, s = AlgPrototipo.upload(inputDati)
-        clienti1 = clienti[0]
-        route1, cost1 = s[0]
-
-        #{0: (38.926, 16.4857), 1: (39.283913942532216, 16.434401280765925), 2: (39.05523863247818, 16.734295616438725), 3: (39.12481454466452, 16.669553003984852), 4: (39.27000123068061, 16.56065906064284), 5: (39.095311778709615, 16.34893874124117), 6: (39.00022937302457, 16.936617650408916), 7: (39.19007651998094, 16.316824079328395), 8: (39.242581105056914, 16.732473096255326), 9: (39.03409314993345, 16.872463600090224), 10: (39.04454422881649, 16.700485401090827)}
-
-        clienti2 = clienti[1]
-        route2, cost2 = s[1]
-        #value = {'lat1' : latitudine1, 'lon1': longitudine1, 'rotta1' : route1, 'costo1' : cost1, 'lat2' : latitudine2, 'lon2': longitudine2, 'rotta2' : route2, 'costo2' : cost2} #, 'deposito': [16.48757,38.92574], 'c1':[16.692104177184746, 39.18847606525372], 'c2':[16.380523533774532, 39.181744129419634]}
-        value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : cost1, 'rotta2' : route2, 'costo2' : cost2}
-        print(value)
-    else:
-        print('no')
-    return HttpResponse(json.dumps(value), content_type='application/json')

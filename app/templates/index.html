@@ -101,13 +101,13 @@
           <p>Acquisisci le coordinate delle posizioni dei clienti da file JSON.</p>
           <div id="divForm" class="custom-file">
             <form id="formUp" class="custom-file" enctype="multipart/form-data" method="post" onchange="formChange()">
-              <input type="file" name="file" class="custom-file-input" id="customFile">
+              <input type="file" name="file" class="custom-file-input" id="customFile" accept="application/json">
               <label id="labelFile" class="custom-file-label" for="customFile">Scegli file</label>
               </br></br>
               <button id="buttonLoad" onclick="submitFile()" type="submit" class="btn btn-primary" disabled>Carica
                 &raquo;</button>
               <!-- Label di caricamento -->
-              <label id="checkFile" for="buttonLoad"></label>
+              <label id="checkFile" for="buttonLoad"></label>            
             </form>
           </div>
 
@@ -213,14 +213,19 @@
             </select>
           </div>
           <p>
-            <button id="demo" onclick="solve()" class="btn btn-primary" type="button">Demo &raquo;</button>
-
+            <button id="demo" onclick="demo()" class="btn btn-primary" type="button">Demo &raquo;</button>
+            <label id="checkDemo" for="demo"></label> 
           </p>
 
           <hr class="my-4">
           <p>L'applicazione ottimizzerà se è possibile i risultati dei clienti.</p>
-          <button id="coperate" onclick="cooperate()" class="btn btn-secondary my-2" type="button">Avvia cooperazione
-            &raquo;</button>
+          <button id="coperate" onclick="cooperate()" class="btn btn-secondary my-2" type="button">Avvia cooperazione&raquo;</button>
+          <label id="checkCoperate" for="coperate"></label> 
+                         
+          <hr class="my-4">
+          <p></p>
+          <button id="reset" onclick="reset()" class="btn btn-danger my-2" type="button">Reset&raquo;</button>
+         
         </div>
       </div>
       <!--
@@ -373,29 +378,12 @@
     //Metodoti inseriti ora 
     var uploadedContent = "";
 
-    function uploadFile(event) {
-      event.preventDefault();
-
-     // alert(uploadedContent);
-      document.getElementById('checkFile').innerHTML = "Caricamento..."
-      /*
-      var dataFile = new FormData($('#formUp').get(0));
-      document.getElementById('checkFile').innerHTML = "Caricamento..."
-      */
+    function uploadFile() {
+      // funzione che inviare i dati json, e analizzare la risposta
+      document.getElementById('checkFile').innerHTML = "Caricamento...";
       $.ajax({
         url: "/upload/",
         type: "POST",
-       /*
-        data: dataFile,
-        cache: false,
-        processData: false,
-        contentType: false,
-        complete: function () {
-          document.getElementById(2).innerHTML = "Nessun dato.";
-        },
-
-        */
-
         data: uploadedContent,
         contentType: 'application/json;charset=UTF-8',
         async: false,
@@ -432,26 +420,15 @@
           
         }
       });
-      return false;
+    return false;
     }
 
     function submitFile() {
-      $('#formUp').submit(uploadFile)
+      $('#formUp').submit(uploadFile);
     }
 
     function formChange() {
-
-      /**
-      document.getElementById("demo").disabled = false
-      document.getElementById('checkFile').innerHTML = ""
-      document.getElementById('labelFile').innerHTML = "Scegli file"
-      var fullPath = document.getElementById('customFile').value;
-      if (fullPath.length != 0) {
-        var index = fullPath.lastIndexOf('\\') + 1
-        var name = fullPath.substring(index);
-        document.getElementById('labelFile').innerHTML = name
-      }
-      **/
+      //funzione che si occupa del caricamento del file in input
       $("#buttonLoad").prop("disabled",true);
       var file = document.querySelector('input[type=file]').files[0];
       document.getElementById('labelFile').innerHTML = file.name;
@@ -467,7 +444,7 @@
     }
 
     function inputSpedizioniereX(tableCod, selectSpedCod, labelCod) {
-      //"spedizioniereInput"
+      //crea la tabella per inserire i dati delle consegne in modo manuale
       document.getElementById('checkManual').innerHTML = "";
       var table = document.getElementById(tableCod);
       table.innerHTML = "";
@@ -498,6 +475,8 @@
     }
 
     function readTable(code, indice) {
+      //legge i dati delle consegne inseriti nella tabella 
+      //e formatta i dati in formato JSON
       var table = document.getElementById('tableIN' + code);
       var coord = '{';
       var latDep = document.getElementById('latDep').value
@@ -516,7 +495,8 @@
     }
 
     function coordinateManual() {
-      event.preventDefault();
+      //il metodo si occupa di inviare i dati presi dalla tabella
+      // di input manuale, e di settare i risultati ottenuti
       var valueSp1 = readTable(1, 1);
       var valueSp2 = readTable(2, valueSp1[1]);
       var dataSend = "[" + valueSp1[0] + ",\n" + valueSp2[0] + "]";
@@ -531,8 +511,7 @@
         success: function (response) {
           if (response != -1) {
             value = JSON.parse(JSON.stringify(response));
-            //  console.log("Solve:");
-            // console.log(value);
+            
             var clienti1 = value['clienti1'];
             var rotta1 = value['rotta1'];
             var costo1 = parseFloat(Math.round(value['costo1'] * 100) / 100).toFixed(2);
@@ -561,9 +540,12 @@
     }
 
     function createTableConsegne(tableBodyCod, client, route) {
+      // questo funzione crea la tabella delle consegne
       var tableBody = document.getElementById(tableBodyCod);
       tableBody.innerHTML = "";
-      client[0];
+      if(route.length==0){
+        return;
+      }
       coords = client[0];
       lat = coords[0];
       lon = coords[1];
@@ -603,21 +585,28 @@
       }
     }
 
+    function reset(){
+      //funzione per il reset dell'applicazione
+      window.location.reload(true);
+      window.scrollTo(0,0);
+    }
+
 
     //Metodo di prima
 
-    function solve() {
-
+    function demo() {
+      // questo funzione si occupa del funzionamento della modalità demo
+      // invia la richiesta con i dati al server e setta l'interfaccia con i dati della risposata
       var noc1 = document.getElementById('selezioneship1').value;
       var noc2 = document.getElementById('selezioneship2').value;
       var obj1 = { 'noc1': noc1, 'noc2': noc2 };
       var myJSON = JSON.stringify(obj1);
+      
+      document.getElementById('checkDemo').innerHTML = "Caricamento...";
 
       $.ajax({
         type: 'POST',
         url: '/demo/',
-
-        //{#                data: name#}
         data: myJSON,
         contentType: 'application/json;charset=UTF-8',
         async: false,
@@ -640,91 +629,34 @@
           run3(clienti1, rotta1, costo1, '0', true);
           c = 1;
           run3(clienti2, rotta2, costo2, '1', false);
+          document.getElementById('checkDemo').innerHTML = "Caricato  &#x2714";
           //document.getElementById(2).innerHTML = "Nessun dato.";
           //document.location.reload(true);
           //alert("The text has been changed." + name);
         },
         error: function (err) {
+          document.getElementById('checkDemo').innerHTML = "Errore  &#x274C"
           console.log(err);
         }
       });
     }
-    /*
-    function demo() {
-                var name = "frasec";
-                var obj1 = {'FileName':name};
-                var myJSON = JSON.stringify(obj1);
     
-               $.ajax({
-                    type: 'POST',
-                    url: '/demo/',
-    
-    //{#                data: name#}
-                    data:myJSON,
-                    contentType: 'application/json;charset=UTF-8',
-                    async: false,
-                    dataType: 'json',
-                    success: function (response) {
-                      console.log(JSON.stringify(response));
-                      value = JSON.parse(JSON.stringify(response));
-                      console.log(value);
-                      IDrotta = 0;
-                      //obj[IDrotta] = value;
-                      run();
-                      //document.location.reload(true);
-                        //alert("The text has been changed." + name);
-                    },
-                    error: function (err) {
-                          console.log(err);
-                    }
-                });
-    
-               $.ajax({
-                    type: 'POST',
-                    url: '/demo/',
-    
-    //{#                data: name#}
-                    data:myJSON,
-                    contentType: 'application/json;charset=UTF-8',
-                    async: false,
-                    dataType: 'json',
-                    success: function (response) {
-                      console.log(JSON.stringify(response));
-                      value = JSON.parse(JSON.stringify(response));
-                      IDrotta = 1;
-                      //obj[IDrotta] = value;
-                      run();
-                      //document.location.reload(true);
-                        //alert("The text has been changed." + name);
-                    },
-                    error: function (err) {
-                          console.log(err);
-                    }
-                });
-    }
-    */
-
     var c = 0;
 
     function cooperate() {
-
+      //il metodo invia al server i dati per effettuare la coperazione
+      //e riporta aggiorna l'interfaccia con i risultati ottenuti
       var clienti1 = value['clienti1'];
       var clienti2 = value['clienti2'];
-      /*
-                var name = "frasec";
-                var lat = value['lat'];
-                var lon = value['lon'];
-                var rotta = value['rotta'];
-    */
       var obj = { 'clienti1': clienti1, 'clienti2': clienti2 };
 
       var myJSON = JSON.stringify(obj);
-      // console.log(myJSON);
+      
+      document.getElementById('checkCoperate').innerHTML = "Caricamento...";
 
       $.ajax({
         type: 'POST',
         url: '/cooperation/',
-
         data: myJSON,
         contentType: 'application/json;charset=UTF-8',
         async: false,
@@ -737,16 +669,18 @@
           var clienti1 = value['clienti1'];
           var rotta1 = value['rotta1'];
           var costo1 = parseFloat(Math.round(value['costo1'] * 100) / 100).toFixed(2);
-          //createTableConsegne('bodyTable1', clienti1, rotta1);
+          createTableConsegne('bodyTable1', clienti1, rotta1);
 
           var clienti2 = value['clienti2'];
           var rotta2 = value['rotta2'];
           var costo2 = parseFloat(Math.round(value['costo2'] * 100) / 100).toFixed(2);
-          //createTableConsegne('bodyTable2', clienti2, rotta2);
+          createTableConsegne('bodyTable2', clienti2, rotta2);
 
           var risultato = value['risultato'].split(';')
           var costoIniziale1 = parseFloat(Math.round(risultato[0] * 100) / 100).toFixed(2);
           var costoIniziale2 = parseFloat(Math.round(risultato[1] * 100) / 100).toFixed(2);
+
+          document.getElementById('checkCoperate').innerHTML = "Caricato  &#x2714";
 
           if (costo1 == costoIniziale1 && costo2 == costoIniziale2) {
             document.getElementById(2).innerHTML = "Non è stato possibile migliorare i costi con la cooperazione. I percorsi dei due spedizionieri sono invariati.";
@@ -772,10 +706,10 @@
             testo += "Il numero di clienti scambiato è pari a " + risultato[3] + " con un risparmio di " + parseFloat(Math.round(risultato[2] * 100) / 100).toFixed(2) + " km.";
             document.getElementById(2).innerHTML = testo;
           }
-
           //run3.clearMap();
         },
         error: function (err) {
+          document.getElementById('checkCoperate').innerHTML = "Errore  &#x274C"
           console.log(err);
         }
       });
@@ -784,10 +718,12 @@
     var OggettiDaEliminare = [];
 
     function run3(clienti, rotta, costo, IDrotta, flag) {
+      // questa funzione è quella che si occupa dell'aggiornamento dei risultati
+      // e della mappa
+
       document.getElementById(2).innerHTML = "Nessun dato.";
       // document.getElementById('reset').onclick = clearMap;
       if (flag) {
-
 
         for (i = 0; i < OggettiDaEliminare.length; i++) {
           var item = OggettiDaEliminare[i];
@@ -992,7 +928,6 @@
         //var bounds = new mapboxgl.LngLatBounds(start, end);
 
         Object.keys(profiles).forEach(function (profile, idx) {
-          //console.log();
           map.addSource(IDrotta + ' ' + profile + ' route', {
             type: 'geojson',
             data: profiles[profile].route.geometry
@@ -1045,6 +980,10 @@
 
       }
     } // function run3
+
+
+    // funzioni scritte precedentemente ora non usate
+
     function run2(lat, lon, rotta, costo, IDrotta) {
 
       // document.getElementById('reset').onclick = clearMap;

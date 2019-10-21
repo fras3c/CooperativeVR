@@ -7,8 +7,11 @@ import json
 import xml.etree.ElementTree as ET
 import csv
 import sys 
+import time
 
 def BuildCode(nrVehicles, capacity, services, costMatrix, filename):
+    '''il metodo scrive sotto forma di stringa,la classe java che si occuperà
+    di fare le operazioni di calcolo sulla base dei parametri in input. '''
 
     code = '''
     import java.io.File;
@@ -116,12 +119,17 @@ def BuildCode(nrVehicles, capacity, services, costMatrix, filename):
         the_file.write(code)
       
 def compile_java(java_file):
+    '''vengono compilati i file .java generati '''
+
     lib='.:./libs/*'
     if sys.platform == 'win32':
         lib='.;./libs/*'
     subprocess.check_call(['javac', '-cp', lib, java_file])
 
 def execute_java(java_file):
+    '''viene eseguito il file .class generato
+    e vengono analizza le soluzioni con il metodo parseXML '''
+
     java_class, ext = os.path.splitext(java_file)
     lib='.:./libs/*'
     if sys.platform == 'win32':
@@ -145,6 +153,9 @@ def execute_java(java_file):
     #print ('This was "' + stdout + '"')
 
 def GenerateCoordinates(nrClients):
+    '''si generano nrClients coordinate di lat e lon
+    nel range specificato '''
+
     N = 39.33
     S = 38.9669
     O = 16.31
@@ -158,6 +169,8 @@ def GenerateCoordinates(nrClients):
 
 
 def BuildClients(lats, lons, IDcliente):
+    '''vengono creati i clienti, specificanfo il deposito e i punti 
+    di consegna con IDcliente '''
 
     deposito = (38.926, 16.4857)
 
@@ -172,10 +185,15 @@ def BuildClients(lats, lons, IDcliente):
 
 
 def Merge(clienti1, clienti2):
+    '''metodi di utilita' che fonde in una singolo struttara tutti 
+    i punti di consegna dei dui clienti, senza ripetuti'''
+
     res = {**clienti1, **clienti2}
     return res
 
 def BuildDistanceGraph(clienti1, clienti2):
+    '''la funzione si occupa di creare la matrice dei costi, effettuando
+    delle richieste GET alle API della mappa'''
 
     clienti = Merge(clienti1, clienti2)
 
@@ -193,8 +211,7 @@ def BuildDistanceGraph(clienti1, clienti2):
                 #print(json_data)
                 #distance = float(json_data['trips'][0]['distance'])
                 distance = float(json_data['trips'][0]['legs'][0]['distance'])
-                DG[(index1, index2)] = distance * 0.001
-    print("=============DG==================")         
+                DG[(index1, index2)] = distance * 0.001 
     #print(DG)
 
     return DG
@@ -214,6 +231,8 @@ def BuildDistanceGraph(clienti1, clienti2):
 
 
 def exchange_candidates(routes_s1, routes_s2, clienti1, DG):
+    ''' questo metodo verifica se scambiando una qualche consegna
+     si ottiene un guadagno sul costo totale '''
 
     candidates = []
 
@@ -260,11 +279,9 @@ def exchange_candidates(routes_s1, routes_s2, clienti1, DG):
         saving_i_r1 = compute_savings_i(cliente, route, DG)
 
         gain = saving_i_r1 - min_delta_i
-
         print("")
         print("Customer: " + str(cliente) + " saving: " + str(saving_i_r1) + "delta: " + str(min_delta_i) + " gain: " + str(saving_i_r1-min_delta_i))
         print("")
-
         if gain > 0:
             candidates.append((cliente, route, best_route_s2, index_i_route_s2, gain, saving_i_r1, min_delta_i))
 
@@ -272,6 +289,8 @@ def exchange_candidates(routes_s1, routes_s2, clienti1, DG):
 
 
 def compute_savings_i(cliente_i, route, DG):   # passare la coordinata x come LON e la coordinata y come LAT
+    '''questo metodo calcola il guadagno che si avrebbe 
+    con il cambiamento di rotta per i cliente_i '''
 
     x_i = cliente_i
     x_d = 0
@@ -303,6 +322,9 @@ def compute_savings_i(cliente_i, route, DG):   # passare la coordinata x come LO
 
 
 def compute_min_delta_i(cliente_i, routes_2, candidate_routes_ids, DG):
+    '''la funzione cerca nella matrice dei costi la migliore rotta per servire 
+     il cliente_i'''
+
 
     #routes_2 = route2
 
@@ -348,6 +370,9 @@ def compute_min_delta_i(cliente_i, routes_2, candidate_routes_ids, DG):
 
 
 def exchange(candidates, routes_2):
+    ''' la funzione scambia i canditai e mostra il log dei risultati
+    ottenuti quali il numero di clienti scambiati, il guadagno ottenuto
+    ed un eventuale costo in più '''
 
     ordered_candidates = sorted(candidates, key=lambda x: x[4])
     #routes_2 = route2
@@ -397,7 +422,7 @@ def exchange(candidates, routes_2):
                 elif index_i_route_s2 == 0:
                     print("In particolare, la posizione di inserimento è tra i nodi deposito e " + str(best_route_s2[index_i_route_s2]))
                 else:
-                    print("In particolare, la posizione di inserimento è tra i nodi " + str(best_route_s2[index_i_route_s2]) + " e deposito.")
+                    print("In particolare, la posizione di inserimento è tra i nodi " + str(best_route_s2[index_i_route_s2]) + " e deposito.")      
                 break
     print("###################")
     print("")
@@ -426,7 +451,7 @@ def printMatrix(m):
         print("|")
 
 def strip_bad_strings(solution_shipper_path):
-
+    '''verifica la corretta formattazione del file output XML'''
     string_1 = '<problem xmlns="http://www.w3schools.com"\n'
     string_2 = '     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3schools.com vrp_xml_schema.xsd">\n'
 
@@ -444,6 +469,9 @@ def strip_bad_strings(solution_shipper_path):
             outfile.write(line)
 
 def parseXML(xmlfile):
+    '''la funzione analizza il file di output prendendo i risultati
+    con la libreria ElementTree'''
+
     # create element tree object
     strip_bad_strings(xmlfile)
 
@@ -485,6 +513,7 @@ def parseXML(xmlfile):
         return routes2, cost
 
 def run2():
+    '''metodo di prova'''
 
     noc1 = 10
     noc2 = 5
@@ -499,13 +528,15 @@ def run2():
     compile_java('Test2.java')
     route1, cost1 = execute_java('Test1.java')
     route2, cost2 = execute_java('Test2.java')
-    print(route1, cost1)
-    print(route2, cost2)
+    #print(route1, cost1)
+    #print(route2, cost2)
     # return route, costs
 
     #return clienti1, clienti2, DG
 
 def solve():
+    '''si occupa di compilare ed eseguire e di restituire i risulati ottenuti'''
+
     compile_java('Test1.java')
     compile_java('Test2.java')
     route1, cost1 = execute_java('Test1.java')
@@ -513,11 +544,15 @@ def solve():
     return [(route1, cost1), (route2, cost2)]
 
 def prepare_problem(customers_to_move, clienti1, clienti2):
+    '''effettua delle operazioni di rimozione per indice dal
+    cliente1 e lo assenga a cliente2'''
+
     for IndexCliente in customers_to_move:
         cliente = clienti1.pop(IndexCliente)
         clienti2[IndexCliente] = cliente
 
 def BuildProblem(NrVehicles, capacity, clienti, DG, filename):
+    '''viene scritta in fomrato stringa per java la matrice dei costi DG'''
 
     costMatrix = '''\t\t\t\tVehicleRoutingTransportCostsMatrix.Builder costMatrixBuilder = VehicleRoutingTransportCostsMatrix.Builder.newInstance(true);\n'''
 
@@ -544,6 +579,9 @@ def alternate():
         yield 1
 
 def run(noc1, noc2):
+    '''il metodo genera le coordinate e costruisce i clienti
+    sulla base dell'input'''
+
     lats1, lons1 = GenerateCoordinates(noc1)
     clienti1, lastIdCliente = BuildClients(lats1, lons1, 1)
     lats2, lons2 = GenerateCoordinates(noc2)
@@ -552,6 +590,7 @@ def run(noc1, noc2):
     return [clienti1, clienti2, noc1, noc2]
 
 def demo(noc1, noc2):
+    '''la funzione che risolve il problema sulla base dell'input'''
 
     clienti = run(noc1, noc2)
     #print(clienti)
@@ -563,6 +602,10 @@ def demo(noc1, noc2):
     return clienti, s
 
 def cooperation(clienti1, clienti2):
+    '''il metodo effettua le operazione di cooperazione, partendo dai due
+    clienti. Per prima crea il problema origina e poi sulla base di questo 
+    effettua la cooperazione '''
+
     customers_to_move, total_saving_s1, total_additional_cost_s2 = [], 0, 0
     lb_s1 = 0
     ub_s2 = 0
@@ -865,7 +908,191 @@ def cooperation(clienti1, clienti2):
 
         return value
 
-def upload(clienti):  
+def cooperationScalability(clienti1, clienti2,temp):
+    '''il metodo è uguale a coperation ma è usato per i test '''
+
+    customers_to_move, total_saving_s1, total_additional_cost_s2 = [], 0, 0
+    lb_s1 = 0
+    ub_s2 = 0
+
+    noc1 = len(clienti1) - 1
+    noc2 = len(clienti2) - 1
+    clienti = [clienti1, clienti2]
+    
+    tStartGraf1=time.time()*1000
+    DG = BuildDistanceGraph(clienti[0], clienti[1])
+    tEndGraf1=time.time()*1000
+    temp['BuildGraf']=((tEndGraf1-tStartGraf1))
+
+    BuildProblem(2, 100, clienti[0], DG, "Test1")
+    BuildProblem(2, 100, clienti[1], DG, "Test2")
+
+    steps = 6
+    i = 0
+
+    x = alternate()
+
+    s1_sol = -1
+    s2_sol = -1
+
+    s1 = 0
+    s2 = 0
+
+    z1 = 0
+    z2 = 0
+
+    old_z1 = 0
+    old_z2 = 0
+
+    route1 = []
+    route2 = []
+
+    
+    while i < steps:
+
+        #spaths = ["/Users/flupia/PycharmProjects/next_shop_5.2/output/instance_problem_1_step_" + str(i) + "-with-solution.xml", "/Users/flupia/PycharmProjects/next_shop_5.2/output/instance_problem_2_step_" + str(i) + "-with-solution.xml"]
+
+        #  strip_bad_strings(spaths[0])
+        #  strip_bad_strings(spaths[1])
+            
+        tStartSol1=time.time()*1000
+        solutions = solve()
+        tEndSol1=time.time()*1000
+        temp['Sol'+str(i)]=((tEndSol1-tStartSol1))
+        
+        s1 = x.__next__()
+        s2 = x.__next__()
+
+        route1, cost1 = solutions[s1]
+        route2, cost2 = solutions[s2]
+
+        clienti1 = clienti[s1]
+        clienti2 = clienti[s2]
+
+        #print_problems_settings(shipper1, shipper2)
+
+        z1 = cost1          # sum(cost for cost in shipper1[3])
+        z2 = cost2          # sum(cost for cost in shipper2[3])
+
+        if s1_sol == -1:
+            s1_sol = z1
+
+        if s2_sol == -1:
+            s2_sol = z2
+
+        if z1 == 0.0:
+                
+            risultato = str(s1_sol)+";"+str(s2_sol)
+            risultato += ";" + str((old_z1 + old_z2) - (z1 + z2)) + ";" + str(i)
+
+            #risultato = {sol_s1_iniziale; sol_s2_iniziale; gain; steps}
+
+            value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : z1, 'rotta2' : route2, 'costo2' : z2, 'risultato' : risultato}
+
+            return value
+
+        elif z2 == 0.0:
+               
+            risultato = str(s2_sol)+";"+str(s1_sol)
+            risultato += ";" + str((old_z1 + old_z2) - (z1 + z2)) + ";" + str(i)
+
+            #risultato = {sol_s1_iniziale; sol_s2_iniziale; gain; steps}
+
+            value = {'clienti1' : clienti2, 'clienti2' : clienti1, 'rotta1' : route2, 'costo1' : z2, 'rotta2' : route1, 'costo2' : z1, 'risultato' : risultato}
+
+            return value
+                
+
+        if i == 0:
+            old_z1 = z1
+            old_z2 = z2
+
+        elif i%2 == 1:
+            old_z1 = z2
+            old_z2 = z1
+
+        else:
+            old_z1 = z1
+            old_z2 = z2
+
+        candidates = exchange_candidates(route1, route2,  clienti1, DG)
+
+        #print(candidates)
+
+        # non c'è bisogno di restituire le posizioni dei customers nelle rotte di S2 perché al prossimo passo riutilizzo JSPRIT per calcolare le soluzioni ottime
+        # dunque dovrò semplicemente inserire i customer nel grafo di S2 e rimuoverli da quello di S1
+
+        customers_to_move, total_saving_s1, total_additional_cost_s2 = exchange(candidates, route2)
+
+        if len(customers_to_move) < 0:
+            break
+            
+        lb_s1 = z1 - total_saving_s1
+        ub_s2 = z2 + total_additional_cost_s2
+
+        i += 1
+
+        x.__next__()
+
+
+        # if s1 == 0:
+        prepare_problem(customers_to_move, clienti1, clienti2)
+        # else:
+        #prepare_problem(customers_to_move, clienti2, clienti1)
+        if s1 == 0:
+            BuildProblem(2, 100, clienti1, DG, "Test1")
+            BuildProblem(2, 100, clienti2, DG, "Test2")
+        else:
+            BuildProblem(2, 100, clienti2, DG, "Test1")
+            BuildProblem(2, 100, clienti1, DG, "Test2")
+
+        risultato = str(s1_sol)+";"+str(s2_sol)
+
+        if i == steps:
+            tStartSol2=time.time()*1000
+            solutions = solve()
+            tEndSol2=time.time()*1000
+            temp['Sol'+str(i)]=((tEndSol2-tStartSol2))
+            #temp.append((tEndSol2-tStartSol2))
+
+            s1 = x.__next__()
+            s2 = x.__next__()
+
+            route1, cost1 = solutions[s1]
+            route2, cost2 = solutions[s2]
+
+            # clienti1 = clienti[s1]
+            # clienti2 = clienti[s2]
+
+            #print_problems_settings(shipper1, shipper2)
+
+            z1 = cost1          # sum(cost for cost in shipper1[3])
+            z2 = cost2          # sum(cost for cost in shipper2[3])
+
+        s1opt = 0
+        s2opt = 0
+
+        if s1 == 0:
+            s1opt = z1
+            s2opt = z2
+        else:
+            s2opt = z1
+            s1opt = z2
+            clienti1 = clienti[1]
+            clienti2 = clienti[0]
+
+    risultato += ";" + str((s1_sol + s2_sol) - (z1 + z2)) + ";" + str(i)
+
+     #risultato = {sol_s1_iniziale; sol_s2_iniziale; gain; steps}
+
+    value = {'clienti1' : clienti1, 'clienti2' : clienti2, 'rotta1' : route1, 'costo1' : s1opt, 'rotta2' : route2, 'costo2' : s2opt, 'risultato': risultato}
+
+    return value
+
+def upload(clienti): 
+    ''' funzione usata per risolve il problema senza cooperazione
+    con i dati dei clienti in input'''
+
     DG = BuildDistanceGraph(clienti[0], clienti[1])
     BuildProblem(2, 100, clienti[0], DG, "Test1")
     BuildProblem(2, 100, clienti[1], DG, "Test2")
@@ -875,6 +1102,8 @@ def upload(clienti):
 
 
 def main():
+    '''metodo main di prova'''
+    
     customers_to_move, total_saving_s1, total_additional_cost_s2 = [], 0, 0
     lb_s1 = 0
     ub_s2 = 0
