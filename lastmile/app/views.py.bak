@@ -1,0 +1,49 @@
+from django.shortcuts import render
+from . import frasec
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import HttpResponse
+
+# Create your views here.
+
+
+@csrf_exempt
+def demo(request):
+    value = {}
+    if request.is_ajax():
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        name = body['FileName']
+        print("ciaociao " +name)
+
+        lats, lons, route, cost = frasec.run()
+        latitudine = []
+        longitudine = []
+        for i in range(len(lats)):
+            latitudine.append(lats[i])
+            longitudine.append(lons[i])
+
+
+        value = {'lat' : latitudine, 'lon': longitudine, 'rotta' : route, 'costo' : cost}#, 'deposito': [16.48757,38.92574], 'c1':[16.692104177184746, 39.18847606525372], 'c2':[16.380523533774532, 39.181744129419634]}
+
+    else:
+        print('no')
+
+    return HttpResponse(json.dumps(value), content_type='application/json')
+
+    #return render(request, 'default.html', {'value':value})
+
+
+lats, lons, route, cost = frasec.run()
+latitudine = []
+longitudine = []
+for i in range(len(lats)):
+    latitudine.append(lats[i])
+    longitudine.append(lons[i])
+
+
+value = {'lat' : latitudine, 'lon': longitudine, 'rotta' : route, 'costo' : cost}#, 'deposito': [16.48757,38.92574], 'c1':[16.692104177184746, 39.18847606525372], 'c2':[16.380523533774532, 39.181744129419634]}
+
+@csrf_exempt
+def index(request):
+    return render(request, 'default.html', {'value':value})#

@@ -1,0 +1,9 @@
+#Author ICT-SUD
+version: '3.7'
+
+services:
+  lastmile:
+    build: .
+    command: /bin/sh -c "python3 manage.py runserver 0.0.0.0:8000 >> log.log 2>&1"
+    ports:
+      - 8000:8000
